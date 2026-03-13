@@ -1,0 +1,797 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vektor.Uz — Karyera Vektoringiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lime: #AAFF00;
+    --lime-dim: #7ACC00;
+    --lime-glow: rgba(170,255,0,0.18);
+    --lime-glow2: rgba(170,255,0,0.06);
+    --lime-border: rgba(170,255,0,0.12);
+    --bg: #0A0A0A;
+    --surface: #111111;
+    --surface2: #161616;
+    --border: rgba(170,255,0,0.12);
+    --text: #F0F0F0;
+    --muted: #666;
+    --muted2: #888;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.022;
+    pointer-events: none;
+  }
+
+  /* ── GRID LINES ── */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(170,255,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(170,255,0,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at 60% 50%, black 30%, transparent 70%);
+  }
+
+  /* ══════════════════════════════════════
+     NAV
+  ══════════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 60px;
+    background: linear-gradient(180deg, rgba(10,10,10,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px;
+    letter-spacing: -0.5px; color: var(--text);
+  }
+  .logo span { color: var(--lime); }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; font-weight: 400; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.5px;
+    text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    font-size: 13px; font-weight: 500;
+    color: var(--bg); background: var(--lime);
+    border: none; padding: 10px 22px;
+    cursor: pointer; letter-spacing: 0.3px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: #ccff33; transform: translateY(-1px); }
+
+  /* ══════════════════════════════════════
+     HERO
+  ══════════════════════════════════════ */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 0 60px; gap: 40px;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute; right: -80px; top: 50%;
+    transform: translateY(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(170,255,0,0.07) 0%, transparent 65%);
+    pointer-events: none;
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  .hero-left {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 7px 14px; width: fit-content;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--lime);
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--lime);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(52px, 6vw, 88px);
+    font-weight: 800; line-height: 0.95; letter-spacing: -2px;
+    animation: fadeUp 0.7s 0.25s ease both;
+  }
+  .hero-title .line-white { color: var(--text); display: block; }
+  .hero-title .line-green { color: var(--lime); display: block; position: relative; }
+
+  .hero-sub {
+    font-size: 16px; font-weight: 300; color: #888;
+    line-height: 1.7; max-width: 400px;
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 20px;
+    animation: fadeUp 0.7s 0.55s ease both;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--lime); color: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 14px 28px; border: none; cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.2s; letter-spacing: 0.2px;
+  }
+  .btn-primary:hover { background: #ccff33; transform: translateY(-2px); }
+  .btn-primary svg { transition: transform 0.2s; }
+  .btn-primary:hover svg { transform: translateX(4px); }
+
+  .btn-ghost {
+    font-size: 13px; color: var(--muted);
+    background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s; letter-spacing: 0.3px;
+  }
+  .btn-ghost:hover { color: var(--text); }
+
+  .stats-row {
+    display: flex; gap: 32px;
+    padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
+    animation: fadeUp 0.7s 0.7s ease both;
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 700; color: var(--text);
+  }
+  .stat-num span { color: var(--lime); }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* RADAR */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 1s 0.3s ease both;
+  }
+
+  .radar-wrap {
+    position: relative;
+    width: min(520px, 48vw);
+    aspect-ratio: 1;
+  }
+
+  .radar-svg { width: 100%; height: 100%; overflow: visible; }
+
+  .ring { fill: none; stroke: rgba(170,255,0,0.12); stroke-width: 0.5; }
+  .ring-outer { stroke: rgba(170,255,0,0.2); stroke-width: 1; }
+
+  .sweep {
+    transform-origin: 260px 260px;
+    animation: sweep 4s linear infinite;
+  }
+
+  .rdot { fill: var(--lime); animation: blink 3s ease-in-out infinite; }
+  .rdot:nth-child(2) { animation-delay: 0.8s; }
+  .rdot:nth-child(3) { animation-delay: 1.6s; }
+  .rdot:nth-child(4) { animation-delay: 0.4s; }
+
+  .vector-arrow {
+    transform-origin: 260px 260px;
+    animation: arrowPulse 2.5s ease-in-out infinite;
+  }
+
+  .float-card {
+    position: absolute;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    backdrop-filter: blur(8px);
+  }
+  .card-icon {
+    width: 32px; height: 32px;
+    background: var(--lime-glow); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .card-text { display: flex; flex-direction: column; gap: 2px; }
+  .card-title { font-size: 11px; font-weight: 600; color: var(--text); letter-spacing: 0.3px; }
+  .card-sub { font-size: 10px; color: var(--muted); }
+
+  .card-1 { top: 8%; left: -6%; animation: float1 4s ease-in-out infinite; }
+  .card-2 { bottom: 16%; right: -8%; animation: float2 4.5s ease-in-out infinite; }
+  .card-3 { bottom: 4%; left: 5%; animation: float3 3.8s ease-in-out infinite; }
+
+  .corner-tl, .corner-br {
+    position: absolute; width: 18px; height: 18px;
+    border-color: var(--lime); border-style: solid; opacity: 0.5;
+  }
+  .corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+  .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+  .tick-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px; fill: rgba(170,255,0,0.4); letter-spacing: 1px;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 60px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 11px; color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: fadeUp 1s 1s ease both;
+  }
+  .scroll-line {
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, var(--lime), transparent);
+  }
+
+  /* ══════════════════════════════════════
+     FOOTER
+  ══════════════════════════════════════ */
+  footer {
+    position: relative; z-index: 1;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  footer::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(170,255,0,0.0) 10%,
+      rgba(170,255,0,0.5) 40%, rgba(170,255,0,0.8) 50%,
+      rgba(170,255,0,0.5) 60%, rgba(170,255,0,0.0) 90%, transparent 100%);
+  }
+
+  .bg-radar {
+    position: absolute; left: -180px; top: -180px;
+    width: 500px; height: 500px;
+    pointer-events: none; z-index: 0; opacity: 0.55;
+  }
+
+  .footer-main {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1.4fr;
+    gap: 0;
+    padding: 72px 64px 56px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .footer-col:not(:first-child) { border-left: 1px solid rgba(255,255,255,0.04); padding-left: 40px; }
+  .footer-col:not(:last-child)  { padding-right: 40px; }
+
+  .col-head {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--lime); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .col-head::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--lime-border), transparent);
+  }
+
+  .logo-mark { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .logo-icon {
+    width: 38px; height: 38px;
+    border: 1px solid var(--lime-border); background: var(--surface2);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .logo-icon svg { width: 20px; height: 20px; }
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 800; letter-spacing: -0.5px; line-height: 1;
+  }
+  .logo-text span { color: var(--lime); }
+  .logo-tagline {
+    font-size: 9px; font-weight: 400; color: var(--muted);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;
+  }
+
+  .about-desc {
+    font-size: 13.5px; font-weight: 300; color: #666;
+    line-height: 1.75; max-width: 240px; margin-bottom: 28px;
+  }
+  .about-desc em { color: var(--muted2); font-style: italic; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(170,255,0,0.05); border: 1px solid var(--lime-border);
+    padding: 6px 12px;
+    font-size: 10px; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--lime);
+  }
+  .status-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--lime); animation: blink 2s ease-in-out infinite;
+  }
+
+  .nav-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .nav-list li a {
+    text-decoration: none; font-size: 13.5px; font-weight: 400; color: var(--muted2);
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.2s, gap 0.2s; letter-spacing: 0.2px;
+  }
+  .nav-list li a::before {
+    content: ''; width: 0; height: 1px;
+    background: var(--lime); transition: width 0.25s ease; flex-shrink: 0;
+  }
+  .nav-list li a:hover { color: var(--text); gap: 12px; }
+  .nav-list li a:hover::before { width: 14px; }
+
+  .support-block { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .support-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 12.5px; color: var(--muted2); line-height: 1.5;
+  }
+  .support-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border: 1px solid var(--lime-border); background: var(--surface2);
+    display: flex; align-items: center; justify-content: center; margin-top: 1px;
+  }
+  .support-icon svg { width: 12px; height: 12px; }
+  .support-val { font-size: 12px; color: var(--text); font-weight: 400; letter-spacing: 0.2px; }
+  .support-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .social-head {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px;
+  }
+  .social-row { display: flex; gap: 10px; }
+  .social-btn {
+    width: 38px; height: 38px;
+    border: 1px solid rgba(255,255,255,0.07); background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .social-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--lime-glow); opacity: 0; transition: opacity 0.2s;
+  }
+  .social-btn:hover { border-color: rgba(170,255,0,0.3); transform: translateY(-2px); }
+  .social-btn:hover::after { opacity: 1; }
+  .social-btn svg { width: 16px; height: 16px; position: relative; z-index: 1; }
+
+  .footer-bottom {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 64px;
+    background: rgba(0,0,0,0.4);
+  }
+  .copy-left { display: flex; align-items: center; gap: 20px; }
+  .copy-text { font-size: 11px; color: var(--muted); letter-spacing: 0.4px; }
+  .copy-text strong { color: var(--muted2); font-weight: 400; }
+  .copy-tagline {
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+    font-style: italic; padding-left: 20px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  .copy-tagline span { color: var(--lime); }
+  .copy-right {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .copy-right span { font-family: 'Syne', sans-serif; color: var(--lime); font-weight: 700; font-size: 11px; }
+
+  /* ══════════════════════════════════════
+     KEYFRAMES
+  ══════════════════════════════════════ */
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:none; } }
+  @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+  @keyframes sweep    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes pulse-dot {
+    0%,100% { box-shadow: 0 0 0 0 rgba(170,255,0,0.6); }
+    50% { box-shadow: 0 0 0 5px rgba(170,255,0,0); }
+  }
+  @keyframes blink {
+    0%,100% { opacity:1; } 50% { opacity:0.3; }
+  }
+  @keyframes arrowPulse {
+    0%,100% { filter: drop-shadow(0 0 6px rgba(170,255,0,0.9)); }
+    50%      { filter: drop-shadow(0 0 18px rgba(170,255,0,1)); }
+  }
+  @keyframes breathe {
+    0%,100% { opacity:1; transform: translateY(-50%) scale(1); }
+    50%      { opacity:0.7; transform: translateY(-50%) scale(1.05); }
+  }
+  @keyframes float1 { 0%,100% { transform:translate(0,0); } 50% { transform:translate(-4px,-8px); } }
+  @keyframes float2 { 0%,100% { transform:translate(0,0); } 50% { transform:translate(5px,7px);   } }
+  @keyframes float3 { 0%,100% { transform:translate(0,0); } 50% { transform:translate(3px,-5px);  } }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════ */
+  @media (max-width: 900px) {
+    nav { padding: 18px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 60px; }
+    .hero::after { display: none; }
+    .radar-wrap { width: min(380px, 90vw); }
+    .hero-title { font-size: clamp(44px, 11vw, 66px); }
+    .scroll-hint { left: 24px; }
+    .card-1 { top: 4%; left: -4%; }
+    .card-2 { bottom: 4%; right: -4%; }
+    .card-3 { display: none; }
+    .footer-main {
+      grid-template-columns: 1fr 1fr; gap: 40px; padding: 56px 32px 48px;
+    }
+    .footer-col:not(:first-child) { border-left: none; padding-left: 0; }
+    .footer-col:not(:last-child)  { padding-right: 0; }
+    .footer-col:nth-child(5) { grid-column: 1 / 3; }
+    .footer-bottom { flex-direction: column; gap: 12px; padding: 18px 24px; text-align: center; }
+    .copy-left { flex-direction: column; gap: 6px; }
+    .copy-tagline { border-left: none; padding-left: 0; }
+  }
+  @media (max-width: 600px) {
+    .footer-main { grid-template-columns: 1fr; padding: 40px 20px 32px; }
+    .footer-col:nth-child(5) { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="logo">Vektor<span>.</span>Uz</div>
+  <ul class="nav-links">
+    <li><a href="/about/">Biz Haqimizda</a></li>
+    <li><a href="/kasb/">Kasblar</a></li>
+    <li><a href="/test/">Test</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location.href='{% url 'test' %}';">Boshlash</button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Karyera yo'nalish platformasi
+    </div>
+    <h1 class="hero-title">
+      <span class="line-white">Sizning</span>
+      <span class="line-white">Karyera</span>
+      <span class="line-green">Vektoringiz</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Vektor.Uz</strong> — qiziqishlaringiz, kuchli tomonlaringiz va
+      mehnat bozori ma'lumotlari asosida sizga mos <strong>kasbiy yo'l</strong>ni ko'rsatadi.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="window.location.href='test.html';" >
+        Yo'nalishni aniqlash
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn-ghost" onclick="window.location.href='qanday_ishlaydi.html';">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M5.5 5.2c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5c0 1-1.5 1.8-1.5 2.8M7 10v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Qanday ishlaydi?
+      </button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">1<span>K+</span></div>
+        <div class="stat-label">Foydalanuvchi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">25<span>+</span></div>
+        <div class="stat-label">Kasb yo'nalishlari</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">94<span>%</span></div>
+        <div class="stat-label">Muvaffaqiyat</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="radar-wrap">
+      <div class="float-card card-1">
+        <div class="card-icon">💡</div>
+        <div class="card-text">
+          <div class="card-title">Qiziqishlar tahlili</div>
+          <div class="card-sub">AI asosida aniqlash</div>
+        </div>
+      </div>
+      <div class="float-card card-2">
+        <div class="card-icon">🎯</div>
+        <div class="card-text">
+          <div class="card-title">Mos kasb topildi</div>
+          <div class="card-sub">Dasturiy ta'minot muhandisi</div>
+        </div>
+      </div>
+      <div class="float-card card-3">
+        <div class="card-icon">📊</div>
+        <div class="card-text">
+          <div class="card-title">Bozor talabi</div>
+          <div class="card-sub">+38% o'sish prognozi</div>
+        </div>
+      </div>
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+      <svg class="radar-svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sweepGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+            gradientTransform="translate(260,260) scale(220)">
+            <stop offset="0%" stop-color="#AAFF00" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="#AAFF00" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-strong" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <clipPath id="circleClip">
+            <circle cx="260" cy="260" r="218"/>
+          </clipPath>
+        </defs>
+        <circle cx="260" cy="260" r="218" fill="none" stroke="rgba(170,255,0,0.3)" stroke-width="1" class="ring-outer"/>
+        <circle cx="260" cy="260" r="160" class="ring"/>
+        <circle cx="260" cy="260" r="110" class="ring"/>
+        <circle cx="260" cy="260" r="60"  class="ring"/>
+        <line x1="260" y1="42" x2="260" y2="478" stroke="rgba(170,255,0,0.08)" stroke-width="0.5"/>
+        <line x1="42"  y1="260" x2="478" y2="260" stroke="rgba(170,255,0,0.08)" stroke-width="0.5"/>
+        <line x1="105" y1="105" x2="415" y2="415" stroke="rgba(170,255,0,0.05)" stroke-width="0.5"/>
+        <line x1="415" y1="105" x2="105" y2="415" stroke="rgba(170,255,0,0.05)" stroke-width="0.5"/>
+        <text x="262" y="50"  class="tick-label" text-anchor="start">N</text>
+        <text x="472" y="264" class="tick-label">E</text>
+        <text x="262" y="476" class="tick-label">S</text>
+        <text x="46"  y="264" class="tick-label">W</text>
+        <g stroke="rgba(170,255,0,0.25)" stroke-width="0.8">
+          <line x1="260" y1="42" x2="260" y2="52"/>
+          <line x1="260" y1="468" x2="260" y2="478"/>
+          <line x1="42"  y1="260" x2="52"  y2="260"/>
+          <line x1="468" y1="260" x2="478" y2="260"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(0,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(45,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(90,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(135,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(180,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(225,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(270,260,260)"/>
+          <line x1="370" y1="71" x2="365" y2="80" transform="rotate(315,260,260)"/>
+        </g>
+        <g class="sweep" clip-path="url(#circleClip)">
+          <path d="M260,260 L260,42 A218,218 0 0,1 394,97 Z" fill="url(#sweepGrad)"/>
+          <line x1="260" y1="260" x2="260" y2="42" stroke="rgba(170,255,0,0.6)" stroke-width="1.2" filter="url(#glow)"/>
+        </g>
+        <g clip-path="url(#circleClip)">
+          <circle class="rdot" cx="340" cy="155" r="4" filter="url(#glow)"/>
+          <circle class="rdot" cx="190" cy="200" r="3" filter="url(#glow)"/>
+          <circle class="rdot" cx="310" cy="310" r="5" filter="url(#glow)"/>
+          <circle class="rdot" cx="175" cy="330" r="3" filter="url(#glow)"/>
+        </g>
+        <circle cx="260" cy="260" r="18" fill="rgba(170,255,0,0.08)" stroke="rgba(170,255,0,0.4)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="6" fill="var(--lime)" filter="url(#glow-strong)"/>
+        <g class="vector-arrow" filter="url(#glow)">
+          <line x1="260" y1="260" x2="360" y2="160" stroke="#AAFF00" stroke-width="2.5" stroke-linecap="round"/>
+          <polygon points="360,160 342,158 358,176" fill="#AAFF00"/>
+        </g>
+        <text x="262" y="152" class="tick-label" fill="rgba(170,255,0,0.3)">160</text>
+        <text x="262" y="202" class="tick-label" fill="rgba(170,255,0,0.3)">110</text>
+        <text x="262" y="252" class="tick-label" fill="rgba(170,255,0,0.3)">60</text>
+        <rect x="10" y="10" width="500" height="500" fill="none" stroke="rgba(170,255,0,0.08)" stroke-width="0.8"/>
+        <path d="M10,40 L10,10 L40,10"   fill="none" stroke="rgba(170,255,0,0.3)" stroke-width="1.2"/>
+        <path d="M480,10 L510,10 L510,40" fill="none" stroke="rgba(170,255,0,0.3)" stroke-width="1.2" transform="translate(-20,0)"/>
+        <path d="M10,480 L10,510 L40,510" fill="none" stroke="rgba(170,255,0,0.3)" stroke-width="1.2" transform="translate(0,-20)"/>
+        <path d="M480,480 L510,480 L510,510" fill="none" stroke="rgba(170,255,0,0.3)" stroke-width="1.2" transform="translate(-20,-20)"/>
+        <text x="14" y="24" font-family="DM Sans" font-size="8" fill="rgba(170,255,0,0.4)" letter-spacing="1.5">VEKTOR//SYS</text>
+        <text x="430" y="24" font-family="DM Sans" font-size="8" fill="rgba(170,255,0,0.4)" letter-spacing="1">v2.4.1</text>
+        <text x="14" y="502" font-family="DM Sans" font-size="8" fill="rgba(170,255,0,0.4)" letter-spacing="1">SCANNING...</text>
+        <text x="390" y="498" font-family="DM Sans" font-size="7.5" fill="rgba(170,255,0,0.35)" letter-spacing="0.8">41.2995°N 69.2401°E</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Pastga suring
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <svg class="bg-radar" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="rg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#AAFF00" stop-opacity="0.09"/>
+        <stop offset="50%"  stop-color="#AAFF00" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#AAFF00" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+    <circle cx="250" cy="250" r="240" fill="url(#rg)"/>
+    <circle cx="250" cy="250" r="240" fill="none" stroke="rgba(170,255,0,0.12)" stroke-width="0.6"/>
+    <circle cx="250" cy="250" r="175" fill="none" stroke="rgba(170,255,0,0.07)" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="115" fill="none" stroke="rgba(170,255,0,0.06)" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="60"  fill="none" stroke="rgba(170,255,0,0.05)" stroke-width="0.5"/>
+    <line x1="250" y1="10"  x2="250" y2="490" stroke="rgba(170,255,0,0.05)" stroke-width="0.5"/>
+    <line x1="10"  y1="250" x2="490" y2="250" stroke="rgba(170,255,0,0.05)" stroke-width="0.5"/>
+    <line x1="250" y1="250" x2="370" y2="130" stroke="rgba(170,255,0,0.18)" stroke-width="1.5" stroke-linecap="round" filter="url(#blur8)"/>
+    <circle cx="250" cy="250" r="5" fill="rgba(170,255,0,0.3)"/>
+  </svg>
+
+  <div class="footer-main">
+    <!-- About -->
+    <div class="footer-col">
+      <div class="logo-mark">
+        <div class="logo-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="8.5" stroke="#AAFF00" stroke-width="0.8" stroke-opacity="0.4"/>
+            <circle cx="10" cy="10" r="5.5" stroke="#AAFF00" stroke-width="0.6" stroke-opacity="0.3"/>
+            <circle cx="10" cy="10" r="2.5" stroke="#AAFF00" stroke-width="0.6" stroke-opacity="0.4"/>
+            <line x1="10" y1="1.5" x2="10" y2="18.5" stroke="#AAFF00" stroke-width="0.5" stroke-opacity="0.2"/>
+            <line x1="1.5" y1="10" x2="18.5" y2="10" stroke="#AAFF00" stroke-width="0.5" stroke-opacity="0.2"/>
+            <line x1="10" y1="10" x2="16" y2="4" stroke="#AAFF00" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="10" cy="10" r="1.5" fill="#AAFF00"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text">Vektor<span>.</span>Uz</div>
+          <div class="logo-tagline">Career Navigation System</div>
+        </div>
+      </div>
+      <p class="about-desc">
+        Talabalar uchun ma'lumotlar, ko'nikmalar va intilishlar asosida
+        <em>karyera yo'llarini topishga</em> yordam beruvchi platforma.
+      </p>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        Barcha tizimlar ishlamoqda
+      </div>
+    </div>
+
+    <div class="footer-col">
+  <div class="col-head">Navigatsiya</div>
+  <ul class="nav-list">
+    <li><a href="/">Bosh sahifa</a></li>
+    <li><a href="#">Bizning usul</a></li>
+    <li><a href="/hamkor/">Hamkorlik</a></li>
+    <li><a href="https://t.me/uzzbecci">Bog'lanish</a></li>
+    <li><a href="/about/">Blog</a></li>
+  </ul>
+</div>
+
+<div class="footer-col">
+  <div class="col-head">Kompaniya</div>
+  <ul class="nav-list">
+    <li><a href="/about/">Haqimizda</a></li>
+    <li><a href="#">Ko'p so'raladigan savollar</a></li>
+    <li><a href="#">Press kit</a></li>
+    <li><a href="#">Karyera</a></li>
+  </ul>
+</div>
+
+    <!-- Huquqiy -->
+    <div class="footer-col">
+      <div class="col-head">Huquqiy</div>
+      <ul class="nav-list">
+        <li><a href="foydalanish_shartlar.html">Foydalanish shartlari</a></li>
+        <li><a href="#">Maxfiylik siyosati</a></li>
+        <li><a href="#">Cookie siyosati</a></li>
+      </ul>
+    </div>
+
+    <!-- Yordam + Ijtimoiy -->
+    <div class="footer-col">
+      <div class="col-head">Yordam</div>
+      <div class="support-block">
+        <div class="support-item">
+          <div class="support-icon">
+            <svg viewBox="0 0 12 12" fill="none">
+              <rect x="1" y="2.5" width="10" height="7" rx="1" stroke="#AAFF00" stroke-width="0.9"/>
+              <path d="M1 3.5l5 3.5 5-3.5" stroke="#AAFF00" stroke-width="0.9" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="support-label">Email</div>
+            <div class="support-val">vektoruz7@gmail.com</div>
+          </div>
+        </div>
+        <div class="support-item">
+          <div class="support-icon">
+            <svg viewBox="0 0 12 12" fill="none">
+              <path d="M2 2h2l1 2.5-1.5 1a7 7 0 003 3l1-1.5L10 8v2a1 1 0 01-1 1A9 9 0 011 3a1 1 0 011-1z" stroke="#AAFF00" stroke-width="0.9" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="support-label">Telefon</div>
+            <div class="support-val">+998 (88) 228 64 54</div>
+          </div>
+        </div>
+      </div>
+      <div class="social-head">Ijtimoiy tarmoqlar</div>
+      <div class="social-row">
+        <button class="social-btn" title="Telegram" onclick="window.location.href='https://t.me/vektoruz_rasmiy';">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M21.5 4.5L3 11l6.5 2L17 8l-6 6 7 4.5 3.5-14z" stroke="#AAFF00" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M9.5 13l1 5 2-3" stroke="#AAFF00" stroke-width="1.3" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="social-btn" title="Instagram" onclick="window.location.href='https://www.instagram.com/vektor.uzz/';">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="4" width="16" height="16" rx="4" stroke="#AAFF00" stroke-width="1.3"/>
+            <circle cx="12" cy="12" r="4" stroke="#AAFF00" stroke-width="1.3"/>
+            <circle cx="17" cy="7" r="1" fill="#AAFF00"/>
+          </svg>
+        </button>
+        <button class="social-btn" title="YouTube" onclick="window.location.href='https://www.youtube.com/@vektor.uz7';">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="6" width="18" height="12" rx="3" stroke="#AAFF00" stroke-width="1.3"/>
+            <path d="M10 9.5l5 2.5-5 2.5V9.5z" stroke="#AAFF00" stroke-width="1.1" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="copy-left">
+      <span class="copy-text">&copy; 2026 <strong>Vektor.Uz</strong> — Barcha huquqlar himoyalangan.</span>
+      <span class="copy-tagline"><span>Precision</span> in Every Direction.</span>
+    </div>
+    <div class="copy-right">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <circle cx="6" cy="6" r="5" stroke="#AAFF00" stroke-width="0.8" stroke-opacity="0.5"/>
+        <circle cx="6" cy="6" r="3" stroke="#AAFF00" stroke-width="0.6" stroke-opacity="0.4"/>
+        <circle cx="6" cy="6" r="1.5" fill="#AAFF00" fill-opacity="0.7"/>
+      </svg>
+      Made in &nbsp;<span>UZ</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

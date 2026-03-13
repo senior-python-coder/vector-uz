@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vektor.Uz — Karyera Testi</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lime: #bfff00;
+  --lime-glow: rgba(191,255,0,0.15);
+  --lime-border: rgba(191,255,0,0.2);
+  --bg: #0a0a0a;
+  --s1: #111;
+  --s2: #161616;
+  --s3: #1e1e1e;
+  --text: #f0f0f0;
+  --muted: #555;
+  --muted2: #888;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.025;pointer-events:none;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(191,255,0,0.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(191,255,0,0.022) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:linear-gradient(180deg,rgba(10,10,10,0.97) 0%,transparent 100%);
+  backdrop-filter:blur(4px);
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.5px;}
+.logo span{color:var(--lime);}
+.nav-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:pulse-dot 2s infinite;}
+.bosh{font-family:'Syne',sans-serif;font-weight:500;font-size:20px;letter-spacing:1px;}
+.bosh span{color:var(--lime);}
+.bosh:hover{cursor:pointer;}
+/* PROGRESS HEADER */
+.progress-header{
+  position:fixed;top:60px;left:0;right:0;z-index:99;
+  padding:0 48px 12px;
+  background:linear-gradient(180deg,rgba(10,10,10,0.95) 0%,transparent 100%);
+}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.progress-meta span{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.progress-meta strong{font-family:'Syne',sans-serif;font-size:13px;color:var(--lime);}
+.pbar-track{height:2px;background:rgba(255,255,255,0.06);position:relative;}
+.pbar-fill{
+  height:100%;background:linear-gradient(90deg,var(--lime),#88cc00);
+  transition:width 0.5s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px rgba(191,255,0,0.5);
+  position:relative;
+}
+.pbar-fill::after{
+  content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;border-radius:50%;background:var(--lime);
+  box-shadow:0 0 6px var(--lime);
+}
+
+/* MAIN */
+main{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:140px 24px 60px;
+}
+.screen{width:100%;max-width:640px;}
+.hidden{display:none!important;}
+
+/* CARD */
+.card{
+  background:var(--s1);
+  border:1px solid rgba(255,255,255,0.06);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(191,255,0,0.5),transparent);
+}
+
+/* QUESTION CARD */
+.q-category{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 12px;margin-bottom:20px;
+  background:rgba(191,255,0,0.06);border:1px solid var(--lime-border);
+  font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--lime);
+}
+.q-number{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  color:var(--muted);letter-spacing:1px;margin-bottom:10px;
+}
+.q-text{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:700;
+  color:var(--text);line-height:1.35;margin-bottom:28px;
+}
+
+/* OPTIONS */
+.options{display:flex;flex-direction:column;gap:10px;}
+.option-btn{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:var(--s2);border:1px solid rgba(255,255,255,0.06);
+  cursor:pointer;text-align:left;width:100%;
+  transition:all 0.18s ease;font-family:'DM Sans',sans-serif;
+  position:relative;overflow:hidden;
+}
+.option-btn::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:rgba(191,255,0,0.07);transition:width 0.3s ease;
+}
+.option-btn:hover{border-color:rgba(191,255,0,0.35);color:var(--text);}
+.option-btn:hover::before{width:100%;}
+.option-btn.selected{
+  border-color:rgba(191,255,0,0.7);
+  background:rgba(191,255,0,0.08);
+  box-shadow:0 0 16px rgba(191,255,0,0.1);
+}
+.option-btn.selected::before{width:100%;background:rgba(191,255,0,0.05);}
+.opt-letter{
+  min-width:30px;height:30px;
+  border:1px solid rgba(255,255,255,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  color:var(--muted);flex-shrink:0;
+  transition:all 0.18s;
+}
+.option-btn.selected .opt-letter{
+  background:var(--lime);color:#0a0a0a;border-color:var(--lime);
+}
+.opt-text{font-size:14px;color:var(--muted2);line-height:1.4;position:relative;z-index:1;transition:color 0.18s;}
+.option-btn:hover .opt-text,.option-btn.selected .opt-text{color:var(--text);}
+
+/* NAV BUTTONS */
+.q-nav{display:flex;align-items:center;justify-content:space-between;margin-top:28px;gap:12px;}
+.btn-prev{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 22px;background:transparent;
+  border:1px solid rgba(255,255,255,0.08);color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-prev:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.btn-next{
+  display:flex;align-items:center;gap:8px;flex:1;justify-content:center;
+  padding:14px 28px;background:var(--lime);color:#0a0a0a;
+  border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all 0.2s;
+}
+.btn-next:hover{background:#ccff33;transform:translateY(-1px);box-shadow:0 0 20px rgba(191,255,0,0.25);}
+.btn-next:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* SECTION INTRO */
+.section-intro{padding:40px;text-align:center;}
+.section-intro .big-num{
+  font-family:'Syne',sans-serif;font-size:64px;font-weight:800;
+  color:var(--lime);line-height:1;margin-bottom:8px;
+  text-shadow:0 0 30px rgba(191,255,0,0.3);
+}
+.section-intro h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:12px;}
+.section-intro p{font-size:14px;color:var(--muted2);line-height:1.7;max-width:400px;margin:0 auto 24px;}
+
+/* RESULTS */
+#results-screen{padding:0;}
+.results-header{
+  padding:40px 40px 28px;
+  background:linear-gradient(135deg,rgba(191,255,0,0.04) 0%,transparent 60%);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.results-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 14px;margin-bottom:16px;
+  background:rgba(191,255,0,0.08);border:1px solid var(--lime-border);
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);
+}
+.results-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.2;margin-bottom:8px;}
+.results-title span{color:var(--lime);}
+.results-sub{font-size:13px;color:var(--muted2);line-height:1.6;}
+
+/* PERSONALITY TYPE */
+.personality-block{
+  margin:24px 40px;padding:20px;
+  background:var(--s2);border:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;gap:16px;
+}
+.personality-icon{
+  width:52px;height:52px;flex-shrink:0;
+  background:rgba(191,255,0,0.08);border:1px solid var(--lime-border);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+}
+.personality-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.personality-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--lime);}
+.personality-desc{font-size:12px;color:var(--muted2);margin-top:2px;line-height:1.5;}
+
+/* TRAIT BARS */
+.traits-block{margin:0 40px 24px;}
+.traits-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.trait-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.trait-name{font-size:12px;color:var(--muted2);width:100px;flex-shrink:0;}
+.trait-track{flex:1;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
+.trait-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--lime),#88cc00);transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.trait-val{font-size:11px;font-family:'Syne',sans-serif;color:var(--lime);width:32px;text-align:right;flex-shrink:0;}
+
+/* CAREER CARDS */
+.careers-block{padding:0 40px 32px;}
+.careers-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.career-card{
+  background:var(--s2);border:1px solid rgba(255,255,255,0.06);
+  padding:20px;margin-bottom:12px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s;
+}
+.career-card:hover{border-color:rgba(191,255,0,0.2);}
+.career-card.top-pick{border-color:rgba(191,255,0,0.35);background:rgba(191,255,0,0.04);}
+.career-card.top-pick::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--lime),transparent);
+}
+.career-rank{
+  position:absolute;top:14px;right:16px;
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  color:rgba(191,255,0,0.08);line-height:1;
+}
+.career-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;}
+.career-emoji{
+  width:42px;height:42px;flex-shrink:0;
+  background:rgba(191,255,0,0.07);border:1px solid var(--lime-border);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.career-top-badge{
+  display:inline-block;padding:2px 8px;margin-bottom:4px;
+  background:var(--lime);color:#0a0a0a;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+}
+.career-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
+.career-field{font-size:11px;color:var(--muted);letter-spacing:0.5px;margin-top:2px;}
+.career-match-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.career-match-track{flex:1;height:3px;background:rgba(255,255,255,0.05);}
+.career-match-fill{height:100%;background:linear-gradient(90deg,var(--lime),#88cc00);transition:width 1.5s cubic-bezier(.4,0,.2,1);}
+.career-match-pct{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--lime);}
+.career-desc{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:12px;}
+.career-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.career-tag{
+  padding:4px 10px;font-size:10px;letter-spacing:0.5px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  color:var(--muted2);
+}
+
+/* RETRY BUTTON */
+.results-footer{padding:0 40px 36px;display:flex;gap:12px;}
+.btn-retry{
+  flex:1;padding:14px;background:transparent;
+  border:1px solid rgba(255,255,255,0.08);color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-retry:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.btn-share{
+  flex:2;padding:14px;background:var(--lime);color:#0a0a0a;
+  border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-share:hover{background:#ccff33;transform:translateY(-1px);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(191,255,0,0.5);}50%{box-shadow:0 0 0 6px rgba(191,255,0,0);}}
+@keyframes countUp{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+.anim-up{animation:fadeUp 0.45s ease both;}
+.anim-in{animation:fadeIn 0.4s ease both;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:#111;}
+::-webkit-scrollbar-thumb{background:#333;}
+
+@media(max-width:640px){
+  nav{padding:16px 20px;}
+  .progress-header{padding:0 20px 12px;}
+  main{padding:130px 16px 40px;}
+  .card .section-intro,.results-header,.personality-block,.traits-block,.careers-block,.results-footer{
+    padding-left:20px;padding-right:20px;
+  }
+  .personality-block{margin:16px 20px;}
+  .traits-block{margin:0 20px 16px;}
+  .q-text{font-size:17px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Vektor<span>.</span>Uz</div>
+  <div class="bosh" onclick="window.location.href='index.html';">Bosh sahifa</div>
+  <div class="nav-meta">
+    <span class="nav-dot"></span>
+    <span id="nav-status">Karyera Testi</span>
+  </div>
+</nav>
+
+<!-- PROGRESS -->
+<div class="progress-header">
+  <div class="progress-meta">
+    <span id="prog-label">Boshlashga tayyor</span>
+    <strong id="prog-pct">0 / 50</strong>
+  </div>
+  <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ══ INTRO ══ -->
+  <div class="screen" id="intro-screen">
+    <div class="card anim-up">
+      <div class="section-intro">
+        <div class="big-num">50</div>
+        <h2>Karyera Diagnostikasi</h2>
+        <p>Har bir savolga to'g'ri va halol javob bering. Natija qanchalik aniq bo'lishini siz belgilaysiz.</p>
+        <div style="display:flex;gap:20px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--lime);">~8 min</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Taxminiy vaqt</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.05);"></div>
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--lime);">5</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Soha bloki</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.05);"></div>
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--lime);">Top 3</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Kasb tavsiyasi</div>
+          </div>
+        </div>
+        <button class="btn-next" style="clip-path:none;width:100%;justify-content:center;" onclick="startQuiz()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Testni Boshlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ QUESTION ══ -->
+  <div class="screen hidden" id="quiz-screen">
+    <div class="card anim-up" id="q-card" style="padding:36px 36px 28px;">
+      <div class="q-category" id="q-cat">Blok 1</div>
+      <div class="q-number" id="q-num">Savol 1 / 50</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="q-nav">
+        <button class="btn-prev" id="btn-prev" onclick="prevQ()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10 7H4M6 4l-3 3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Orqaga
+        </button>
+        <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>
+          Keyingisi
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7h6M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RESULTS ══ -->
+  <div class="screen hidden" id="results-screen">
+    <div class="card anim-up" id="results-card">
+      <div class="results-header">
+        <div class="results-badge">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M3 5l1.5 1.5L7 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Tahlil tugadi
+        </div>
+        <h2 class="results-title">Sizning <span>Karyera Vektoringiz</span></h2>
+        <p class="results-sub" id="results-sub">50 ta savolga asoslanib, sizga mos kasbiy yo'nalishlar aniqlandi.</p>
+      </div>
+
+      <div class="personality-block" id="personality-block">
+        <div class="personality-icon" id="p-icon">🧠</div>
+        <div>
+          <div class="personality-label">Shaxsiyat turi</div>
+          <div class="personality-name" id="p-name">—</div>
+          <div class="personality-desc" id="p-desc">—</div>
+        </div>
+      </div>
+
+      <div class="traits-block">
+        <div class="traits-title">Kuchli tomonlar</div>
+        <div id="traits-container"></div>
+      </div>
+
+      <div class="careers-block">
+        <div class="careers-title">Top 3 — Kasbiy Tavsiyalar</div>
+        <div id="careers-container"></div>
+      </div>
+
+      <div class="results-footer">
+        <button class="btn-retry" onclick="retakeQuiz()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 108-4.5L7.5 4M10 2.5V5H7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Qaytadan
+        </button>
+        <button class="btn-share" onclick="shareResult()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="3" cy="8" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 7.2l6-3.4M4.5 8.8l6 3.4" stroke="currentColor" stroke-width="1.3"/></svg>
+          Natijani Ulashish
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  50 QUESTIONS — 5 blocks × 10 questions
+//  Scoring keys: tech, creative, social, business, science
+// ══════════════════════════════════════════════════════════
+const QUESTIONS = [
+  // ─── BLOK 1: TEXNOLOGIYA VA MANTIQ (1–10) ───
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Yangi dasturiy ta'minot o'rganish haqida qanday fikrdasiz?",
+    options: [
+      { text: "Juda qiziq, yangi texnologiyalarni o'rganishni yaxshi ko'raman", scores: { tech: 4, creative: 1, social: 0, business: 1, science: 2 } },
+      { text: "Kerak bo'lsa o'rganaman, lekin katta qiziqish yo'q", scores: { tech: 2, creative: 1, social: 1, business: 1, science: 1 } },
+      { text: "Boshqalar bilan birgalikda o'rganishni afzal ko'raman", scores: { tech: 1, creative: 0, social: 3, business: 1, science: 0 } },
+      { text: "Insonlarga yordam beradigan texnologiyalar qiziqtiradi", scores: { tech: 2, creative: 1, social: 2, business: 1, science: 1 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Kod yozish haqida qanday fikrdasiz?",
+    options: [
+      { text: "Muammolarni kod orqali hal qilish menga zavq beradi", scores: { tech: 4, creative: 2, social: 0, business: 0, science: 2 } },
+      { text: "Oddiy skriptlar yozishni bilaman, lekin professional emas", scores: { tech: 2, creative: 1, social: 0, business: 1, science: 1 } },
+      { text: "Kod yozmayman, lekin texnik narsalar qiziqtiradi", scores: { tech: 2, creative: 0, social: 0, business: 2, science: 1 } },
+      { text: "Koddan ko'ra dizayn va vizual tomonni afzal ko'raman", scores: { tech: 1, creative: 4, social: 1, business: 0, science: 0 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Quyidagi faoliyatlardan qaysi biri sizga ko'proq yoqadi?",
+    options: [
+      { text: "Server arxitekturasini loyihalash va optimallashtirish", scores: { tech: 5, creative: 0, social: 0, business: 1, science: 2 } },
+      { text: "Mobil ilova UI/UX dizaynini yaratish", scores: { tech: 2, creative: 4, social: 1, business: 0, science: 0 } },
+      { text: "Foydalanuvchilarni texnologiyaga o'rgatish", scores: { tech: 2, creative: 1, social: 4, business: 1, science: 0 } },
+      { text: "Tech startapni boshqarish va rivojlantirish", scores: { tech: 2, creative: 1, social: 1, business: 4, science: 0 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Muammo yechishda qaysi yondashuvni afzal ko'rasiz?",
+    options: [
+      { text: "Tizimli tahlil qilib, mantiqiy yechim topaman", scores: { tech: 4, creative: 0, social: 0, business: 1, science: 3 } },
+      { text: "Ijodiy va yangicha usullar bilan yechaman", scores: { tech: 1, creative: 4, social: 1, business: 1, science: 1 } },
+      { text: "Jamoa bilan birga muhokama qilib topaman", scores: { tech: 0, creative: 1, social: 4, business: 2, science: 0 } },
+      { text: "Ma'lumotlar va statistikaga tayangan holda qaror qabul qilaman", scores: { tech: 3, creative: 0, social: 0, business: 3, science: 4 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Sun'iy intellekt (AI) rivojlanishi haqida qanday fikrdasiz?",
+    options: [
+      { text: "AI modellari yaratish va tadqiq qilish juda qiziqarli", scores: { tech: 5, creative: 1, social: 0, business: 0, science: 4 } },
+      { text: "AIni amaliy loyihalarda ishlatishni o'rganmoqchiman", scores: { tech: 3, creative: 2, social: 0, business: 2, science: 1 } },
+      { text: "AI jamiyatga ta'siri va etikasi meni ko'proq qiziqtiradi", scores: { tech: 1, creative: 1, social: 3, business: 2, science: 2 } },
+      { text: "AIni biznes jarayonlarini avtomatlashtirish uchun ishlataman", scores: { tech: 2, creative: 0, social: 0, business: 4, science: 1 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Quyidagi soha siz uchun eng qiziqarli:",
+    options: [
+      { text: "Kiberxavfsizlik va tizim himoyasi", scores: { tech: 5, creative: 0, social: 1, business: 1, science: 2 } },
+      { text: "Game development (o'yin yaratish)", scores: { tech: 3, creative: 4, social: 1, business: 1, science: 0 } },
+      { text: "EdTech — ta'lim texnologiyalari", scores: { tech: 2, creative: 2, social: 4, business: 1, science: 1 } },
+      { text: "FinTech — moliyaviy texnologiyalar", scores: { tech: 3, creative: 0, social: 0, business: 5, science: 1 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Erkin vaqtingizda qanday texnik faoliyat bilan shug'ullanasiz?",
+    options: [
+      { text: "YouTube'dan texnik tutoriallar ko'raman", scores: { tech: 3, creative: 1, social: 0, business: 0, science: 2 } },
+      { text: "Ijtimoiy tarmoqlarda kontent yarataman", scores: { tech: 1, creative: 4, social: 3, business: 2, science: 0 } },
+      { text: "Online kurslar orqali yangi ko'nikmalar o'rganaman", scores: { tech: 3, creative: 1, social: 0, business: 2, science: 2 } },
+      { text: "Gadjetlar va yangi texnologiyalar haqida o'qiyman", scores: { tech: 3, creative: 1, social: 0, business: 1, science: 2 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Matematika va algoritmlar haqida qanday fikrdasiz?",
+    options: [
+      { text: "Juda yaxshi ko'raman, murakkab algoritmlar qiziqtiradi", scores: { tech: 5, creative: 0, social: 0, business: 0, science: 4 } },
+      { text: "Asosiy matematikani bilaman, shart emas deb o'ylayman", scores: { tech: 1, creative: 2, social: 2, business: 2, science: 0 } },
+      { text: "Statistika va tahlilga ko'proq qiziqaman", scores: { tech: 2, creative: 0, social: 1, business: 3, science: 4 } },
+      { text: "Moliyaviy hisob-kitoblar uchun zarur deb bilaman", scores: { tech: 1, creative: 0, social: 0, business: 4, science: 2 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "Ideal ish muhiti qanday bo'lishi kerak?",
+    options: [
+      { text: "Mustaqil ishlash, minimal uchrashuv, chuqur konsentratsiya", scores: { tech: 4, creative: 2, social: 0, business: 0, science: 3 } },
+      { text: "Ijodiy muhit, ilhomlantiradigan space", scores: { tech: 1, creative: 5, social: 2, business: 1, science: 0 } },
+      { text: "Jamoaviy, energiyali, doimo muloqotda bo'ladigan joy", scores: { tech: 0, creative: 1, social: 5, business: 2, science: 0 } },
+      { text: "Natijaga yo'naltirilgan, raqobatli muhit", scores: { tech: 1, creative: 0, social: 1, business: 5, science: 1 } },
+    ]
+  },
+  {
+    block: "💻 Texnologiya & Mantiq", blockNum: 1,
+    text: "5 yil ichida o'zingizni qayerda ko'rasiz?",
+    options: [
+      { text: "Yirik IT kompaniyasida senior dasturchi yoki arxitekt", scores: { tech: 5, creative: 1, social: 0, business: 1, science: 2 } },
+      { text: "O'z kreativ studiyam yoki dizayn agentligim", scores: { tech: 1, creative: 5, social: 2, business: 2, science: 0 } },
+      { text: "Ta'lim yoki ijtimoiy sohadagi yetakchi", scores: { tech: 0, creative: 1, social: 5, business: 1, science: 1 } },
+      { text: "Startap asoschisi yoki biznes direktori", scores: { tech: 1, creative: 1, social: 1, business: 5, science: 0 } },
+    ]
+  },
+
+  // ─── BLOK 2: IJODIYOT VA SAN'AT (11–20) ───
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Biror yangi fikr yoki loyiha g'oyasi kelganda nima qilasiz?",
+    options: [
+      { text: "Darhol eskiz yoki prototip yasayman", scores: { tech: 2, creative: 5, social: 0, business: 1, science: 0 } },
+      { text: "Batafsil rejalashtiraman, so'ng amalga oshiraman", scores: { tech: 2, creative: 1, social: 0, business: 4, science: 2 } },
+      { text: "Boshqalar bilan muhokama qilib, fikr olaman", scores: { tech: 0, creative: 2, social: 4, business: 2, science: 0 } },
+      { text: "Ilmiy asosini tekshiraman, ma'lumot yig'aman", scores: { tech: 2, creative: 0, social: 0, business: 1, science: 5 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Quyidagi ijodiy faoliyatlardan qaysi biri sizga eng yaqin?",
+    options: [
+      { text: "Grafik dizayn va vizual identitiy yaratish", scores: { tech: 1, creative: 5, social: 0, business: 1, science: 0 } },
+      { text: "Video va kino ishlari", scores: { tech: 2, creative: 5, social: 2, business: 1, science: 0 } },
+      { text: "Musiqa ijodiyoti va audio produksiya", scores: { tech: 1, creative: 5, social: 1, business: 0, science: 0 } },
+      { text: "Yozuvchilik, blog yoki jurnalistika", scores: { tech: 0, creative: 4, social: 3, business: 1, science: 1 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Estetika va vizual dizayn sizga qanchalik muhim?",
+    options: [
+      { text: "Juda muhim — go'zal narsalar yaratish asosiy motivatsiyam", scores: { tech: 0, creative: 5, social: 1, business: 0, science: 0 } },
+      { text: "Muhim, lekin funksionallik birinchi o'rinda", scores: { tech: 3, creative: 3, social: 0, business: 2, science: 1 } },
+      { text: "O'rtacha ahamiyat beraman", scores: { tech: 1, creative: 2, social: 2, business: 2, science: 1 } },
+      { text: "Kamroq muhim, mazmun ko'rinishdan ustun", scores: { tech: 2, creative: 1, social: 3, business: 2, science: 3 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Inson his-tuyg'ularini ifodalash usullari orasida qaysi biri sizga ko'proq yoqadi?",
+    options: [
+      { text: "Tasviriy san'at — rasm, skulptura, fotografiya", scores: { tech: 0, creative: 5, social: 1, business: 0, science: 0 } },
+      { text: "Sahna san'ati — teatr, aktyor mahorati", scores: { tech: 0, creative: 4, social: 4, business: 0, science: 0 } },
+      { text: "Adabiyot va she'riyat", scores: { tech: 0, creative: 4, social: 2, business: 0, science: 1 } },
+      { text: "Arxitektura va interior dizayn", scores: { tech: 2, creative: 4, social: 1, business: 2, science: 1 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Ijodiy loyihadagi eng qiyin qism nima?",
+    options: [
+      { text: "Boshlash va birinchi qadamni tashlash", scores: { tech: 1, creative: 3, social: 2, business: 2, science: 1 } },
+      { text: "Texnik amaliyotga o'tkazish", scores: { tech: 3, creative: 3, social: 0, business: 1, science: 2 } },
+      { text: "Tanqidga javob berish va takomillashtirish", scores: { tech: 1, creative: 3, social: 3, business: 2, science: 1 } },
+      { text: "Moliyaviy qo'llab-quvvatlash topish", scores: { tech: 0, creative: 2, social: 1, business: 5, science: 0 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Kontent yaratish (content creation) haqida qanday fikrdasiz?",
+    options: [
+      { text: "Professional kontent yaratuvchi bo'lishni xohlayman", scores: { tech: 1, creative: 5, social: 3, business: 2, science: 0 } },
+      { text: "Qiziqarli hobi sifatida ko'raman", scores: { tech: 0, creative: 3, social: 2, business: 0, science: 0 } },
+      { text: "Biznes marketing uchun foydali vosita deb bilaman", scores: { tech: 1, creative: 2, social: 2, business: 4, science: 0 } },
+      { text: "Yangi bilimlar tarqatish uchun ajoyib usul", scores: { tech: 2, creative: 2, social: 3, business: 1, science: 3 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Muzey yoki galereyada qaysi ko'rgazma sizni ko'proq qiziqtiradi?",
+    options: [
+      { text: "Zamonaviy raqamli san'at va interaktiv installatsiyalar", scores: { tech: 3, creative: 5, social: 1, business: 0, science: 1 } },
+      { text: "Klassik rassomlik va haykaltaroshlik", scores: { tech: 0, creative: 5, social: 1, business: 0, science: 1 } },
+      { text: "Milliy tarix va madaniy meros", scores: { tech: 0, creative: 2, social: 4, business: 1, science: 2 } },
+      { text: "Fan va texnologiya ko'rgazmalari", scores: { tech: 4, creative: 1, social: 1, business: 1, science: 5 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Brend identitiy (logo, rang, uslub) yaratish haqida fikringiz?",
+    options: [
+      { text: "Juda qiziq, brending mening ehtirosim", scores: { tech: 1, creative: 5, social: 2, business: 2, science: 0 } },
+      { text: "Texnik qism (to'g'ri ranglar, proporsiyalar) muhim", scores: { tech: 3, creative: 3, social: 0, business: 1, science: 1 } },
+      { text: "Maqsadli auditoriyani tushunish asosiy", scores: { tech: 0, creative: 2, social: 4, business: 4, science: 0 } },
+      { text: "Oddiy va tushunarli bo'lsa yetarli", scores: { tech: 1, creative: 1, social: 2, business: 3, science: 0 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Fotosurat olishda nimaga ko'proq e'tibor berasiz?",
+    options: [
+      { text: "Yorug'lik, kompozitsiya, ranglar uyg'unligi", scores: { tech: 1, creative: 5, social: 0, business: 0, science: 1 } },
+      { text: "Odamlar va ularning his-tuyg'ulari", scores: { tech: 0, creative: 3, social: 5, business: 0, science: 0 } },
+      { text: "Mahsulot yoki biznes uchun professional fotosuratlar", scores: { tech: 1, creative: 3, social: 1, business: 4, science: 0 } },
+      { text: "Ilmiy tadqiqot uchun vizual hujjatlashtirish", scores: { tech: 2, creative: 2, social: 0, business: 0, science: 4 } },
+    ]
+  },
+  {
+    block: "🎨 Ijodiyot & San'at", blockNum: 2,
+    text: "Ijodiy ishlaringizni baholash usuli sifatida nimani afzal ko'rasiz?",
+    options: [
+      { text: "Ko'pchilik fikri va ijtimoiy tarmoqlardagi reaksiyalar", scores: { tech: 0, creative: 3, social: 4, business: 2, science: 0 } },
+      { text: "Mutaxassis va ustozlar baholashi", scores: { tech: 2, creative: 3, social: 1, business: 0, science: 3 } },
+      { text: "Moliyaviy muvaffaqiyat — sotilishi va daromadi", scores: { tech: 0, creative: 2, social: 0, business: 5, science: 0 } },
+      { text: "Shaxsiy qoniqish va o'z standartlarim", scores: { tech: 1, creative: 5, social: 0, business: 0, science: 2 } },
+    ]
+  },
+
+  // ─── BLOK 3: IJTIMOIY VA GUMANITAR (21–30) ───
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Boshqalarga yordam berish qanchalik muhim sizga?",
+    options: [
+      { text: "Eng muhim — insonlarga xizmat qilish asosiy maqsadim", scores: { tech: 0, creative: 0, social: 5, business: 0, science: 1 } },
+      { text: "Muhim, lekin o'z maqsadlarim ham bor", scores: { tech: 1, creative: 1, social: 3, business: 3, science: 1 } },
+      { text: "Jamiyatga foydali texnologiya orqali yordam beraman", scores: { tech: 4, creative: 1, social: 2, business: 1, science: 2 } },
+      { text: "Tadqiqot va yangiliklar orqali jamiyatni yaxshilaman", scores: { tech: 2, creative: 0, social: 2, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Notanish odam bilan qanday muloqot qilasiz?",
+    options: [
+      { text: "Osonlik bilan muloqot o'rnataman, yangi tanishlikni yaxshi ko'raman", scores: { tech: 0, creative: 1, social: 5, business: 3, science: 0 } },
+      { text: "Asta-sekin ochilaman, lekin chuqur muloqotni afzal ko'raman", scores: { tech: 2, creative: 2, social: 3, business: 1, science: 2 } },
+      { text: "Kerak bo'lgandagina muloqot qilaman", scores: { tech: 3, creative: 2, social: 1, business: 2, science: 3 } },
+      { text: "Professional muhitda qulay, shaxsiy muhitda kamroq", scores: { tech: 2, creative: 1, social: 2, business: 4, science: 2 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Ta'lim va o'rgatish haqida qanday fikrdasiz?",
+    options: [
+      { text: "Yosh avlodga bilim berish – oliy fazilatlardan biri", scores: { tech: 0, creative: 1, social: 5, business: 0, science: 2 } },
+      { text: "Online platformalar orqali o'qitish zamonaviy usul", scores: { tech: 3, creative: 2, social: 3, business: 2, science: 1 } },
+      { text: "Korporativ treninglar va kasbiy rivojlanish muhimroq", scores: { tech: 1, creative: 0, social: 2, business: 5, science: 1 } },
+      { text: "Ilmiy tadqiqot natijalari asosida o'qitish ideal", scores: { tech: 2, creative: 0, social: 3, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Ijtimoiy muammo oldida qanday harakat qilasiz?",
+    options: [
+      { text: "Faol ishtirok etaman, mitinglar va kampaniyalarda", scores: { tech: 0, creative: 2, social: 5, business: 1, science: 0 } },
+      { text: "NGO yoki notijorat tashkilot orqali ishlashni afzal ko'raman", scores: { tech: 0, creative: 1, social: 5, business: 2, science: 1 } },
+      { text: "Texnologik yechim ishlab chiqaman", scores: { tech: 4, creative: 2, social: 2, business: 2, science: 2 } },
+      { text: "Ilmiy tadqiqot orqali muammoni chuqur tushunaman", scores: { tech: 2, creative: 0, social: 2, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Psixologiya va inson xatti-harakati sizi qiziqtiradimi?",
+    options: [
+      { text: "Ha, juda qiziq — insonlar motivatsiyasini tushunishni yaxshi ko'raman", scores: { tech: 0, creative: 1, social: 5, business: 2, science: 3 } },
+      { text: "UX va foydalanuvchi xulqini o'rganish uchun kerak", scores: { tech: 3, creative: 3, social: 3, business: 1, science: 2 } },
+      { text: "Marketing va sotuvda foydalanish uchun qiziqarli", scores: { tech: 0, creative: 2, social: 2, business: 5, science: 1 } },
+      { text: "Kam qiziqtiradi, aniq fanlar ko'proq yoqadi", scores: { tech: 3, creative: 0, social: 0, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Jamoada ishlash uslubingiz qanday?",
+    options: [
+      { text: "Yetakchi bo'lishni va yo'nalish berishni yaxshi ko'raman", scores: { tech: 1, creative: 1, social: 3, business: 5, science: 1 } },
+      { text: "Hamkorlik va konsensus izlashni afzal ko'raman", scores: { tech: 1, creative: 2, social: 5, business: 2, science: 1 } },
+      { text: "Mustaqil ishlashni afzal ko'raman, lekin jamoaga qo'shilaman", scores: { tech: 4, creative: 3, social: 1, business: 1, science: 3 } },
+      { text: "Ekspert sifatida hissa qo'shaman, boshqarilishni xohlamayman", scores: { tech: 3, creative: 3, social: 0, business: 1, science: 4 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Sog'liqni saqlash va tibbiyot sohasi qanchalik qiziqtiradi?",
+    options: [
+      { text: "Vrach yoki tibbiy mutaxassis bo'lishni orzu qilaman", scores: { tech: 1, creative: 0, social: 4, business: 0, science: 5 } },
+      { text: "Ruhiy sog'liq va psixologiya ko'proq qiziqtiradi", scores: { tech: 0, creative: 1, social: 5, business: 0, science: 3 } },
+      { text: "Tibbiy texnologiyalar va innovatsiyalar qiziqarli", scores: { tech: 4, creative: 1, social: 2, business: 2, science: 4 } },
+      { text: "Tibbiyot sohasi menga yaqin emas", scores: { tech: 3, creative: 3, social: 1, business: 3, science: 1 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Madaniyat va san'atning jamiyatdagi roli haqida qanday fikrdasiz?",
+    options: [
+      { text: "Juda muhim — madaniyat millatni birlashtiradigan asosiy kuch", scores: { tech: 0, creative: 3, social: 5, business: 0, science: 1 } },
+      { text: "Iqtisodiy jihatdan ham muhim — kreativ iqtisodiyot", scores: { tech: 1, creative: 3, social: 2, business: 4, science: 0 } },
+      { text: "Ruhiyatga ijobiy ta'sir ko'rsatadi", scores: { tech: 0, creative: 4, social: 3, business: 0, science: 2 } },
+      { text: "Qiziqarli, lekin ustuvor yo'nalish emas", scores: { tech: 3, creative: 1, social: 1, business: 3, science: 3 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Hayotingizda eng ko'p ta'sir ko'rsatgan odam kim?",
+    options: [
+      { text: "O'qituvchi yoki mentor — bilim bergan shaxs", scores: { tech: 1, creative: 1, social: 5, business: 1, science: 2 } },
+      { text: "Tadbirkor yoki yetakchi — muvaffaqiyatga ilhomlantirgan", scores: { tech: 1, creative: 1, social: 2, business: 5, science: 0 } },
+      { text: "Olim yoki kashfiyotchi — dunyo bilimini o'zgartirgan", scores: { tech: 3, creative: 0, social: 1, business: 0, science: 5 } },
+      { text: "San'atkor yoki yaratuvchi — dunyoni go'zallashtirgàn", scores: { tech: 0, creative: 5, social: 2, business: 0, science: 1 } },
+    ]
+  },
+  {
+    block: "🤝 Ijtimoiy & Insoniy", blockNum: 3,
+    text: "Diplomatiya va muzokaralar haqida qanday fikrdasiz?",
+    options: [
+      { text: "Muzokaralar mening kuchli tomonim — ishonch va til bilan yechaman", scores: { tech: 0, creative: 1, social: 5, business: 4, science: 0 } },
+      { text: "Ma'lumotlar va faktlar bilan ishonarli dalillar taqdim etaman", scores: { tech: 2, creative: 0, social: 2, business: 3, science: 4 } },
+      { text: "Ijodiy yechimlar taklif qilaman", scores: { tech: 2, creative: 4, social: 2, business: 2, science: 1 } },
+      { text: "Kamroq qiziqtiradi, texnik masalalar ko'proq yoqadi", scores: { tech: 5, creative: 2, social: 0, business: 1, science: 3 } },
+    ]
+  },
+
+  // ─── BLOK 4: BIZNES VA TADBIRKORLIK (31–40) ───
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Pul va moliya haqida qanday munosabatdasiz?",
+    options: [
+      { text: "Moliyaviy mustaqillik va boylik asosiy motivatsiyam", scores: { tech: 1, creative: 0, social: 0, business: 5, science: 0 } },
+      { text: "Yetarli daromad bo'lsa bas, boylik emas qiziqish muhim", scores: { tech: 2, creative: 4, social: 2, business: 1, science: 2 } },
+      { text: "Jamiyatga foydali ish qilishdan baxtli bo'laman", scores: { tech: 1, creative: 1, social: 5, business: 0, science: 2 } },
+      { text: "Ilmiy yutuqlar pul daromadidan ko'ra muhimroq", scores: { tech: 3, creative: 1, social: 1, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Startap g'oyasi bo'lsa, birinchi qilgan ishi nima bo'ladi?",
+    options: [
+      { text: "MVP (minimal mahsulot) qilaman va bozorda sinab ko'raman", scores: { tech: 3, creative: 2, social: 0, business: 5, science: 1 } },
+      { text: "Biznes reja va moliyaviy model tuzaman", scores: { tech: 0, creative: 0, social: 0, business: 5, science: 2 } },
+      { text: "Jamoa topaman va birga ishlaymiz", scores: { tech: 1, creative: 1, social: 4, business: 4, science: 0 } },
+      { text: "Bozor tadqiqoti va raqobat tahlili qilaman", scores: { tech: 2, creative: 0, social: 2, business: 4, science: 3 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Marketing va sotuv sizga qanchalik qiziq?",
+    options: [
+      { text: "Juda qiziq — odamlarga mahsulot sotish san'at", scores: { tech: 0, creative: 3, social: 4, business: 5, science: 0 } },
+      { text: "Digital marketing va SMM qiziqtiradi", scores: { tech: 2, creative: 4, social: 3, business: 4, science: 0 } },
+      { text: "Ma'lumotlarga asoslangan marketing (data-driven) ko'proq yoqadi", scores: { tech: 4, creative: 0, social: 1, business: 4, science: 3 } },
+      { text: "Kamroq qiziqtiradi, mahsulot yaratish ko'proq yoqadi", scores: { tech: 4, creative: 3, social: 0, business: 1, science: 2 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Investitsiya va moliyaviy bozorlar haqida qanday fikrdasiz?",
+    options: [
+      { text: "Fond bozori va aktsiyalar meni qiziqtiradi, o'rganmoqchiman", scores: { tech: 2, creative: 0, social: 0, business: 5, science: 3 } },
+      { text: "Real biznesga investitsiya qilishni afzal ko'raman", scores: { tech: 1, creative: 1, social: 1, business: 5, science: 1 } },
+      { text: "Kripto va DeFi kabi yangi moliya tizimlariga qiziqaman", scores: { tech: 4, creative: 1, social: 0, business: 4, science: 2 } },
+      { text: "Moliyaviy mavzular kamroq qiziqtiradi", scores: { tech: 3, creative: 4, social: 3, business: 0, science: 3 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Menejment va boshqaruv stilingiz qanday?",
+    options: [
+      { text: "Transformatsion — ilhomlantirib va o'sishga yo'naltiraman", scores: { tech: 0, creative: 2, social: 4, business: 4, science: 0 } },
+      { text: "Data-driven — raqamlar va KPIlar asosida qaror qilaman", scores: { tech: 3, creative: 0, social: 1, business: 5, science: 3 } },
+      { text: "Agilе — tez o'zgarib, innovatsiyaga yo'nalaman", scores: { tech: 4, creative: 3, social: 1, business: 4, science: 1 } },
+      { text: "Menejmеntdan ko'ra mutaxassis bo'lishni afzal ko'raman", scores: { tech: 4, creative: 3, social: 0, business: 0, science: 4 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "E-commerce (internet savdo) haqida qanday fikrdasiz?",
+    options: [
+      { text: "O'z online do'konimni ochishni xohlayman", scores: { tech: 2, creative: 2, social: 1, business: 5, science: 0 } },
+      { text: "Texnik platformasini yaratish qiziqtiradi", scores: { tech: 5, creative: 1, social: 0, business: 2, science: 1 } },
+      { text: "UX/UI dizaynini optimallashtirish qiziqarli", scores: { tech: 2, creative: 5, social: 1, business: 2, science: 0 } },
+      { text: "Logistika va zanjir boshqaruvi ko'proq qiziqtiradi", scores: { tech: 2, creative: 0, social: 1, business: 5, science: 2 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Riskni qabul qilish bo'yicha qanday poziciyada turasiz?",
+    options: [
+      { text: "Yuqori risk — katta imkoniyat deb bilaman", scores: { tech: 2, creative: 2, social: 1, business: 5, science: 1 } },
+      { text: "O'rtacha risk — hisoblangan qarorlar qabul qilaman", scores: { tech: 2, creative: 1, social: 2, business: 4, science: 2 } },
+      { text: "Past risk — barqarorlik va xavfsizlik muhimroq", scores: { tech: 3, creative: 1, social: 3, business: 1, science: 3 } },
+      { text: "Risk o'rniga innovatsiya — yangilik yaratib oldinga chiqaman", scores: { tech: 4, creative: 4, social: 1, business: 3, science: 3 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Muzokaralar va shartnomalar sizga qanchalik qulay?",
+    options: [
+      { text: "Juda qulay — ishonchli muzokarachilardan birimanm", scores: { tech: 0, creative: 1, social: 4, business: 5, science: 0 } },
+      { text: "Texnik talablarga asoslanib muzokaralar qilaman", scores: { tech: 4, creative: 0, social: 1, business: 3, science: 2 } },
+      { text: "Ijodiy taklif va g'oyalar bilan e'tiborni jalb etaman", scores: { tech: 1, creative: 4, social: 2, business: 3, science: 0 } },
+      { text: "Muzokaradan ko'ra texnik va ilmiy ish afzal", scores: { tech: 4, creative: 2, social: 0, business: 0, science: 5 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Qaysi biznes sohasida ishlashni xohlar edingiz?",
+    options: [
+      { text: "IT va texnologiya kompaniyasi", scores: { tech: 5, creative: 1, social: 0, business: 3, science: 2 } },
+      { text: "Kreativ agentlik yoki media kompaniya", scores: { tech: 1, creative: 5, social: 2, business: 3, science: 0 } },
+      { text: "Ta'lim yoki sog'liqni saqlash", scores: { tech: 1, creative: 1, social: 5, business: 2, science: 3 } },
+      { text: "Moliya, bank yoki konsalting", scores: { tech: 2, creative: 0, social: 1, business: 5, science: 3 } },
+    ]
+  },
+  {
+    block: "📈 Biznes & Tadbirkorlik", blockNum: 4,
+    text: "Kelajakdagi ish tartibi uchun qaysi model afzalroq?",
+    options: [
+      { text: "Remote work — dunyoning istalgan joyidan ishlash", scores: { tech: 4, creative: 3, social: 1, business: 2, science: 3 } },
+      { text: "Freelancer — mustaqil loyihalar bo'yicha ishlash", scores: { tech: 2, creative: 5, social: 1, business: 3, science: 1 } },
+      { text: "Korporatsiya — barqaror lavozim va career ladder", scores: { tech: 2, creative: 1, social: 2, business: 4, science: 3 } },
+      { text: "O'z biznesim — tadbirkor bo'lish", scores: { tech: 2, creative: 2, social: 2, business: 5, science: 0 } },
+    ]
+  },
+
+  // ─── BLOK 5: FAN VA TADQIQOT (41–50) ───
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Ilmiy tadqiqot usuli sifatida qaysi yondashuvni afzal ko'rasiz?",
+    options: [
+      { text: "Eksperimental — laboratoriyada sinab ko'rish", scores: { tech: 3, creative: 1, social: 0, business: 0, science: 5 } },
+      { text: "Nazariy — model va formulalar orqali tushuntirish", scores: { tech: 4, creative: 0, social: 0, business: 0, science: 5 } },
+      { text: "Amaliy — real muammolarga yechim topish", scores: { tech: 3, creative: 2, social: 2, business: 3, science: 4 } },
+      { text: "Ijtimoiy tadqiqot — inson xulqini o'rganish", scores: { tech: 0, creative: 1, social: 5, business: 2, science: 4 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Biologiya va tirik organizmlar dunyosi qanchalik qiziq?",
+    options: [
+      { text: "Juda qiziq — tibbiyot yoki biotexnologiya yo'lini ko'ryapman", scores: { tech: 2, creative: 0, social: 2, business: 0, science: 5 } },
+      { text: "Atrof-muhit va ekologiya ko'proq qiziqtiradi", scores: { tech: 1, creative: 2, social: 3, business: 0, science: 5 } },
+      { text: "Bioinformatika va genomika — texnologiya bilan bog'liq qismi", scores: { tech: 5, creative: 0, social: 0, business: 1, science: 5 } },
+      { text: "Biologiya kam qiziqtiradi", scores: { tech: 4, creative: 3, social: 2, business: 3, science: 1 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Fizika va kimyo haqida qanday munosabatdasiz?",
+    options: [
+      { text: "Kvant fizikasi va nanostatexnologiyalar — kelajak!", scores: { tech: 5, creative: 0, social: 0, business: 0, science: 5 } },
+      { text: "Kimyo orqali yangi materiallar va dorilar yaratish qiziqarli", scores: { tech: 3, creative: 1, social: 1, business: 2, science: 5 } },
+      { text: "Muhandislik fizikasi — qurilmalar va tizimlar", scores: { tech: 5, creative: 1, social: 0, business: 2, science: 4 } },
+      { text: "Aniq fanlar kam qiziqtiradi", scores: { tech: 1, creative: 4, social: 4, business: 3, science: 0 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Kosmosni o'rganish va astronomiya sizi qanchalik qiziqtiradi?",
+    options: [
+      { text: "Juda qiziq — NASA yoki ESA kabi tashkilotlarda ishlashni orzu qilaman", scores: { tech: 4, creative: 1, social: 0, business: 0, science: 5 } },
+      { text: "Koinot falsafasi va mavjudligi haqida ko'p o'ylayman", scores: { tech: 1, creative: 3, social: 2, business: 0, science: 4 } },
+      { text: "Kosmik texnologiyalarni yerda qo'llash qiziqarli", scores: { tech: 5, creative: 0, social: 0, business: 2, science: 3 } },
+      { text: "Qiziqarli, lekin ustuvor yo'nalish emas", scores: { tech: 2, creative: 2, social: 2, business: 2, science: 2 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Ma'lumotlar tahlili (data science) va statistika haqida fikringiz?",
+    options: [
+      { text: "Juda qiziq — katta ma'lumotlardan naqshlar topish sevimli mashg'ulotim", scores: { tech: 5, creative: 0, social: 0, business: 2, science: 5 } },
+      { text: "Biznes qarorlari uchun zarur vosita", scores: { tech: 3, creative: 0, social: 0, business: 5, science: 3 } },
+      { text: "Ijtimoiy tadqiqotlarda qo'llash uchun foydali", scores: { tech: 2, creative: 0, social: 4, business: 1, science: 4 } },
+      { text: "Raqamlar emas, vizual narativlar ko'proq yoqadi", scores: { tech: 0, creative: 5, social: 2, business: 1, science: 1 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Iqlim o'zgarishi va atrof-muhit muammolari haqida nima deyolasiz?",
+    options: [
+      { text: "Hayotimdagi eng muhim muammo — kasbim shu yo'nalishda bo'lishi kerak", scores: { tech: 2, creative: 1, social: 4, business: 1, science: 5 } },
+      { text: "Yashil texnologiyalar orqali yechish mumkin", scores: { tech: 5, creative: 1, social: 2, business: 3, science: 4 } },
+      { text: "ESG va barqaror biznes modellari orqali", scores: { tech: 1, creative: 1, social: 3, business: 5, science: 3 } },
+      { text: "Muhim muammo, lekin boshqa prioritetlarim bor", scores: { tech: 3, creative: 3, social: 1, business: 3, science: 1 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Tibbiy tadqiqot va farmatsevtika qanchalik qiziqtiradi?",
+    options: [
+      { text: "Yangi dorilar va davolash usullarini kashf etish orzu", scores: { tech: 3, creative: 1, social: 2, business: 1, science: 5 } },
+      { text: "Klinik tadqiqotlar va ma'lumotlar tahlili qiziqarli", scores: { tech: 4, creative: 0, social: 1, business: 2, science: 5 } },
+      { text: "Sog'liqni saqlash tizimini yaxshilash muhimroq", scores: { tech: 2, creative: 0, social: 5, business: 2, science: 3 } },
+      { text: "Tibbiyot sohasiga qiziqmay man", scores: { tech: 4, creative: 4, social: 1, business: 4, science: 0 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Muhandislik (engineering) sohasiga munosabatingiz qanday?",
+    options: [
+      { text: "Qurilish yoki mexanik muhandislik — moddiy narsalar yaratish", scores: { tech: 4, creative: 2, social: 0, business: 2, science: 4 } },
+      { text: "Elektr muhandisligi va elektronika", scores: { tech: 5, creative: 1, social: 0, business: 1, science: 5 } },
+      { text: "Dasturiy ta'minot muhandisligi (Software Engineering)", scores: { tech: 5, creative: 2, social: 0, business: 2, science: 3 } },
+      { text: "Muhandislikdan ko'ra boshqarish va loyihalash afzal", scores: { tech: 2, creative: 2, social: 2, business: 5, science: 2 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Ilmiy konferensiya yoki seminarni ko'rib chiqishga qanday munosabatdasiz?",
+    options: [
+      { text: "Juda yaxshi — yangi tadqiqotlar va g'oyalar bilan tanishish sevimli ish", scores: { tech: 3, creative: 1, social: 2, business: 0, science: 5 } },
+      { text: "Amaliy va qo'llaniladigan tadqiqotlarga qiziqaman", scores: { tech: 3, creative: 2, social: 1, business: 3, science: 4 } },
+      { text: "Tarmoq va professional aloqalar uchun foydali", scores: { tech: 1, creative: 1, social: 4, business: 4, science: 2 } },
+      { text: "Vaqt sarflamasdan oddiy maqolalar o'qishni afzal ko'raman", scores: { tech: 2, creative: 3, social: 1, business: 2, science: 2 } },
+    ]
+  },
+  {
+    block: "🔬 Fan & Tadqiqot", blockNum: 5,
+    text: "Oxirgi savol: Hayotingizda eng katta muvaffaqiyat nima bo'lishi kerak?",
+    options: [
+      { text: "Millionlab insonlar foydalanadigan texnologiya yaratish", scores: { tech: 5, creative: 2, social: 3, business: 3, science: 2 } },
+      { text: "Esda qoladigan ijodiy asar yoki meros qoldirish", scores: { tech: 0, creative: 5, social: 3, business: 1, science: 1 } },
+      { text: "Jamiyatga ijobiy o'zgarish olib kelish", scores: { tech: 1, creative: 1, social: 5, business: 2, science: 3 } },
+      { text: "Ilm-fan sohasida kashfiyot qilish va Nobel mukofoti", scores: { tech: 3, creative: 0, social: 1, business: 0, science: 5 } },
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════
+//  CAREER DATABASE
+// ══════════════════════════════════════════════════════════
+const CAREERS = [
+  // TECH-dominant
+  { name:"Dasturiy ta'minot muhandisi", field:"Texnologiya · IT", emoji:"⌨️",
+    weights:{ tech:5, creative:1, social:0, business:2, science:3 },
+    desc:"Mobil, web va tizim dasturlari yaratish. O'zbekistonda IT sohasida eng ko'p talab qilinadigan kasblardan biri.",
+    tags:["Python / JS", "Backend", "Frontend", "Full-Stack"] },
+  { name:"Sun'iy intellekt muhandisi", field:"AI · Machine Learning", emoji:"🤖",
+    weights:{ tech:5, creative:1, social:0, business:1, science:5 },
+    desc:"ML modellari yaratish, neyron tarmoqlar va AI tizimlari ustida ishlash. Global talabi yuqori kasb.",
+    tags:["Python", "TensorFlow", "Data", "Research"] },
+  { name:"Kiberxavfsizlik mutaxassisi", field:"IT Xavfsizlik", emoji:"🛡️",
+    weights:{ tech:5, creative:0, social:1, business:2, science:3 },
+    desc:"Kompaniyalarni raqamli hujumlardan himoya qilish. Tez o'sayotgan va yuqori maoshli soha.",
+    tags:["Ethical Hacking", "Network", "Security", "CTF"] },
+  { name:"Mobil ilova dasturchisi", field:"Mobile Development", emoji:"📱",
+    weights:{ tech:5, creative:3, social:1, business:2, science:1 },
+    desc:"iOS va Android ilovalar yaratish. Foydalanuvchi tajribasini yaxshilash va texnik qismni birlashtirish.",
+    tags:["Flutter", "Swift", "Kotlin", "React Native"] },
+  { name:"Bulut arxitekti", field:"Cloud · DevOps", emoji:"☁️",
+    weights:{ tech:5, creative:0, social:0, business:2, science:4 },
+    desc:"AWS, Azure, GCP kabi bulut tizimlarini loyihalash va boshqarish. Yuqori texnik ko'nikmalar talab etadi.",
+    tags:["AWS", "Docker", "Kubernetes", "CI/CD"] },
+
+  // CREATIVE-dominant
+  { name:"UX/UI Dizayner", field:"Dizayn · Texnologiya", emoji:"🎨",
+    weights:{ tech:3, creative:5, social:2, business:2, science:0 },
+    desc:"Raqamli mahsulotlar uchun go'zal va qulay interfeyslar yaratish. Ijodiylik va texnik bilim uyg'unligi.",
+    tags:["Figma", "Prototyping", "Research", "Design Systems"] },
+  { name:"Motion Grafik Dizayner", field:"Kreativ · Media", emoji:"🎬",
+    weights:{ tech:2, creative:5, social:1, business:2, science:0 },
+    desc:"Animatsiya, video va vizual effektlar yaratish. Reklama, kino va raqamli media sohalarida ishlash imkoniyati.",
+    tags:["After Effects", "Cinema 4D", "Blender", "Premiere"] },
+  { name:"Brend Dizayner", field:"Brending · Marketing", emoji:"✏️",
+    weights:{ tech:1, creative:5, social:2, business:3, science:0 },
+    desc:"Kompaniyalar uchun vizual identitet yaratish. Logo, ranglar, tipografiya va brendning umumiy obrazi.",
+    tags:["Identity", "Typography", "Strategy", "Illustrator"] },
+  { name:"Kontent yaratuvchi / Blogger", field:"Media · Ijtimoiy tarmoqlar", emoji:"📸",
+    weights:{ tech:1, creative:5, social:4, business:3, science:0 },
+    desc:"Ijtimoiy tarmoqlarda auditoriya qurish va monetizatsiya. Kreativlik, strategiya va doimiy izlanish talab etiladi.",
+    tags:["YouTube", "Instagram", "TikTok", "Monetization"] },
+  { name:"O'yin Dasturchisi", field:"Game Dev · Kreativ", emoji:"🎮",
+    weights:{ tech:4, creative:5, social:1, business:2, science:1 },
+    desc:"Video o'yin dunyolari, mexanikalar va vizual tajribalar yaratish. Texnik va ijodiy qobiliyatlar birlashuvi.",
+    tags:["Unity", "Unreal", "C#", "Storytelling"] },
+
+  // SOCIAL-dominant
+  { name:"Ta'lim texnologiyalari mutaxassisi", field:"EdTech · Ta'lim", emoji:"📚",
+    weights:{ tech:3, creative:2, social:5, business:2, science:2 },
+    desc:"Online kurslar, ta'lim platformalari va yangi o'qitish usullarini ishlab chiqish. Ta'lim + texnologiya uyg'unligi.",
+    tags:["Curriculum", "LMS", "E-learning", "Pedagogy"] },
+  { name:"Psixolog / Karyera Maslahatchisi", field:"Psixologiya · HR", emoji:"🧠",
+    weights:{ tech:0, creative:1, social:5, business:2, science:4 },
+    desc:"Odamlarga kasbiy va shaxsiy rivojlanishda yordam berish. Chuqur empatiya va komunikatsiya ko'nikmalari.",
+    tags:["Counseling", "Assessment", "Career", "Development"] },
+  { name:"PR va Kommunikatsiya mutaxassisi", field:"PR · Media", emoji:"📣",
+    weights:{ tech:1, creative:3, social:5, business:3, science:0 },
+    desc:"Kompaniya imidji va munosabatlarini boshqarish. Ommaviy nutq, media va kriz kommunikatsiyasi.",
+    tags:["Media Relations", "Crisis Comm", "Branding", "Events"] },
+  { name:"HR Texnologiyalari mutaxassisi", field:"HR · People Tech", emoji:"👥",
+    weights:{ tech:3, creative:1, social:5, business:3, science:2 },
+    desc:"Xodimlarni jalb qilish, saqlash va rivojlantirish tizimlarini yaratish. Texnologiya va insonga yo'naltirilganlik.",
+    tags:["Recruitment", "Culture", "Analytics", "L&D"] },
+  { name:"Xalqaro munosabatlar mutaxassisi", field:"Diplomatiya · Siyosat", emoji:"🌐",
+    weights:{ tech:0, creative:1, social:5, business:3, science:2 },
+    desc:"Davlatlar, xalqaro tashkilotlar o'rtasida aloqalarni boshqarish. Ko'p tillilik va global dunyoqarash zarur.",
+    tags:["Diplomacy", "Policy", "Languages", "Negotiation"] },
+
+  // BUSINESS-dominant
+  { name:"Biznes Tahlilchisi", field:"Biznes · Konsalting", emoji:"📊",
+    weights:{ tech:3, creative:1, social:2, business:5, science:3 },
+    desc:"Kompaniyalarning biznes jarayonlari va samaradorligini tahlil qilish. Ma'lumotlar va strategik fikrlash.",
+    tags:["Analytics", "SQL", "PowerBI", "Strategy"] },
+  { name:"Mahsulot Menejeri (Product Manager)", field:"PM · Tech", emoji:"🗺️",
+    weights:{ tech:3, creative:2, social:3, business:5, science:1 },
+    desc:"Raqamli mahsulotlarning hayot siklini boshqarish. Texnik, ijodiy va biznes bilimlar kesishmasida turish.",
+    tags:["Roadmap", "Agile", "Scrum", "Stakeholders"] },
+  { name:"Moliyaviy Tahlilchi / Investment", field:"Moliya · Finance", emoji:"💹",
+    weights:{ tech:2, creative:0, social:1, business:5, science:4 },
+    desc:"Kompaniyalar va investitsiyalar moliyaviy tahlili. Fond bozori, model yaratish va prognozlash.",
+    tags:["Excel", "Valuation", "Markets", "CFA"] },
+  { name:"Digital Marketing Mutaxassisi", field:"Marketing · Growth", emoji:"🚀",
+    weights:{ tech:3, creative:4, social:3, business:5, science:1 },
+    desc:"Online kanallar orqali biznes o'sishini ta'minlash. SEO, SMM, performance marketing va tahlil.",
+    tags:["SEO", "Ads", "Analytics", "Content"] },
+  { name:"Tadbirkor / Startap asoschisi", field:"Tadbirkorlik", emoji:"⚡",
+    weights:{ tech:2, creative:3, social:2, business:5, science:1 },
+    desc:"O'z biznesini qurishga ruhlanish, risk qabul qilish va innovatsiyani tijoratga aylantirish.",
+    tags:["Vision", "Fundraising", "Team Building", "MVP"] },
+
+  // SCIENCE-dominant
+  { name:"Ma'lumotlar Olimi (Data Scientist)", field:"Data Science · AI", emoji:"🔭",
+    weights:{ tech:5, creative:1, social:0, business:2, science:5 },
+    desc:"Katta hajmdagi ma'lumotlar tahlili orqali biznes va ilmiy savollariga javob topish.",
+    tags:["Python", "Statistics", "ML", "Visualization"] },
+  { name:"Biomeditsina muhandisi", field:"Biotexnologiya · Tibbiyot", emoji:"🧬",
+    weights:{ tech:4, creative:1, social:2, business:1, science:5 },
+    desc:"Tibbiy qurilmalar, protezlar va davolash texnologiyalarini ishlab chiqish. Fan va tibbiyot kesishmasida.",
+    tags:["BioMed", "R&D", "FDA", "Medical Devices"] },
+  { name:"Atrof-muhit olimi", field:"Ekologiya · Yashil Tech", emoji:"🌿",
+    weights:{ tech:3, creative:1, social:4, business:1, science:5 },
+    desc:"Iqlim o'zgarishi, atrof-muhit muammolari va barqaror rivojlanish bo'yicha tadqiqotlar.",
+    tags:["Climate", "Sustainability", "Research", "Policy"] },
+  { name:"Kompyuter fanlari tadqiqotchisi", field:"CS Research · Academia", emoji:"🔬",
+    weights:{ tech:5, creative:2, social:1, business:0, science:5 },
+    desc:"Algoritmlar, kriptografiya, kvant hisoblash bo'yicha ilmiy tadqiqotlar. Akademik yoki sanoat laboratoriyalari.",
+    tags:["Algorithms", "Quantum", "Publications", "PhD"] },
+  { name:"Raqamli Sog'liqni Saqlash mutaxassisi", field:"Health Tech", emoji:"⚕️",
+    weights:{ tech:4, creative:0, social:4, business:2, science:5 },
+    desc:"Tibbiy ma'lumotlar tahlili, telemedisin va sog'liqni saqlash raqamlashtiruvi.",
+    tags:["EHR", "Telehealth", "Clinical AI", "HIPAA"] },
+];
+
+// ══════════════════════════════════════════════════════════
+//  QUIZ STATE
+// ══════════════════════════════════════════════════════════
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+function startQuiz() {
+  document.getElementById('intro-screen').classList.add('hidden');
+  document.getElementById('quiz-screen').classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const card = document.getElementById('q-card');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(12px)';
+
+  setTimeout(() => {
+    document.getElementById('q-cat').textContent = q.block;
+    document.getElementById('q-num').textContent = `Savol ${currentQ + 1} / ${QUESTIONS.length}`;
+    document.getElementById('q-text').textContent = q.text;
+    document.getElementById('nav-status').textContent = `Blok ${q.blockNum} / 5`;
+
+    // progress
+    const pct = Math.round((currentQ / QUESTIONS.length) * 100);
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('prog-pct').textContent = `${currentQ} / ${QUESTIONS.length}`;
+    document.getElementById('prog-label').textContent = `${q.block.replace(/^.{2}\s/,'')}`;
+
+    // options
+    const container = document.getElementById('q-options');
+    container.innerHTML = '';
+    const letters = ['A','B','C','D'];
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+      btn.innerHTML = `
+        <span class="opt-letter">${letters[i]}</span>
+        <span class="opt-text">${opt.text}</span>
+      `;
+      btn.onclick = () => selectAnswer(i);
+      container.appendChild(btn);
+    });
+
+    // prev/next
+    document.getElementById('btn-prev').style.display = currentQ === 0 ? 'none' : 'flex';
+    document.getElementById('btn-next').disabled = answers[currentQ] === null;
+    document.getElementById('btn-next').textContent = currentQ === QUESTIONS.length - 1 ? 'Natijani Ko\'rish →' : 'Keyingisi →';
+
+    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    card.style.opacity = '1';
+    card.style.transform = 'none';
+  }, 150);
+}
+
+function selectAnswer(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('btn-next').disabled = false;
+
+  // auto-advance on mobile after slight delay
+  if (window.innerWidth < 768) {
+    setTimeout(() => { if (currentQ < QUESTIONS.length - 1) nextQ(); }, 500);
+  }
+}
+
+function nextQ() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+// ══════════════════════════════════════════════════════════
+//  SCORING & RESULTS
+// ══════════════════════════════════════════════════════════
+function showResults() {
+  // Tally scores
+  const totals = { tech:0, creative:0, social:0, business:0, science:0 };
+  answers.forEach((ansIdx, qIdx) => {
+    if (ansIdx === null) return;
+    const scores = QUESTIONS[qIdx].options[ansIdx].scores;
+    Object.keys(scores).forEach(k => totals[k] += scores[k]);
+  });
+
+  // Normalize to 100
+  const maxPossible = { tech:0, creative:0, social:0, business:0, science:0 };
+  QUESTIONS.forEach(q => {
+    q.options.forEach(opt => {
+      Object.keys(opt.scores).forEach(k => {
+        maxPossible[k] = Math.max(maxPossible[k], opt.scores[k]);
+      });
+    });
+  });
+  // simple normalize: divide by theoretical max per dimension
+  const maxPerDim = QUESTIONS.length * 5;
+  const normalized = {};
+  Object.keys(totals).forEach(k => {
+    normalized[k] = Math.min(100, Math.round((totals[k] / maxPerDim) * 100));
+  });
+
+  // Personality type
+  const dominant = Object.keys(normalized).reduce((a,b) => normalized[a]>normalized[b]?a:b);
+  const personalities = {
+    tech:     { name:"Texnik Novator",    icon:"⚙️", desc:"Mantiqiy fikrlash, muammo yechish va tizimli yondashuv" },
+    creative: { name:"Ijodiy Vizioner",   icon:"🎨", desc:"G'oyalar, estetika va yangilik yaratishga yo'naltirilgan" },
+    social:   { name:"Insonparvar Lideri",icon:"🤝", desc:"Insonlar bilan ishlash, yordam berish va ilhomlantirish" },
+    business: { name:"Strategik Tadbirkor",icon:"📈",desc:"Natijalarga yo'naltirilgan, risk va imkoniyatlarni ko'radi" },
+    science:  { name:"Tahlilchi Olim",    icon:"🔬", desc:"Chuqur tadqiqot, faktlar va ilmiy yondashuvga ishtiyoq" },
+  };
+  const p = personalities[dominant];
+
+  // Match careers using cosine-like similarity
+  const careerScores = CAREERS.map(career => {
+    let score = 0;
+    let totalWeight = 0;
+    Object.keys(normalized).forEach(k => {
+      score += normalized[k] * career.weights[k];
+      totalWeight += career.weights[k];
+    });
+    const matchPct = totalWeight > 0 ? Math.min(99, Math.round((score / (totalWeight * 100)) * 100) + 40) : 50;
+    return { ...career, matchPct };
+  });
+  careerScores.sort((a,b) => b.matchPct - a.matchPct);
+  const top3 = careerScores.slice(0, 3);
+
+  // Render
+  document.getElementById('quiz-screen').classList.add('hidden');
+  const resultsScreen = document.getElementById('results-screen');
+  resultsScreen.classList.remove('hidden');
+
+  document.getElementById('pbar').style.width = '100%';
+  document.getElementById('prog-pct').textContent = `50 / 50`;
+  document.getElementById('prog-label').textContent = 'Test yakunlandi';
+  document.getElementById('nav-status').textContent = 'Natijalar';
+
+  document.getElementById('results-sub').textContent =
+    `${answers.filter(a=>a!==null).length} ta savolga asoslanib, ${dominant === 'tech' ? 'texnologiya' : dominant === 'creative' ? 'ijodiyot' : dominant === 'social' ? 'ijtimoiy' : dominant === 'business' ? 'biznes' : 'fan'} yo'nalishida kuchli potensialingiz aniqlandi.`;
+
+  document.getElementById('p-icon').textContent = p.icon;
+  document.getElementById('p-name').textContent = p.name;
+  document.getElementById('p-desc').textContent = p.desc;
+
+  // Traits
+  const traitLabels = { tech:"Texnik", creative:"Ijodiy", social:"Ijtimoiy", business:"Biznes", science:"Ilmiy" };
+  const traitsHTML = Object.entries(normalized)
+    .sort((a,b) => b[1]-a[1])
+    .map(([k,v]) => `
+      <div class="trait-row">
+        <span class="trait-name">${traitLabels[k]}</span>
+        <div class="trait-track"><div class="trait-fill" style="width:0%" data-val="${v}"></div></div>
+        <span class="trait-val">${v}%</span>
+      </div>
+    `).join('');
+  document.getElementById('traits-container').innerHTML = traitsHTML;
+
+  // Career cards
+  const careersHTML = top3.map((c, i) => `
+    <div class="career-card ${i===0?'top-pick':''}">
+      <div class="career-rank">${i+1}</div>
+      <div class="career-header">
+        <div class="career-emoji">${c.emoji}</div>
+        <div>
+          ${i===0 ? '<div class="career-top-badge">⭐ Eng mos kasb</div>' : ''}
+          <div class="career-name">${c.name}</div>
+          <div class="career-field">${c.field}</div>
+        </div>
+      </div>
+      <div class="career-match-row">
+        <div class="career-match-track"><div class="career-match-fill" style="width:0%" data-val="${c.matchPct}"></div></div>
+        <span class="career-match-pct">${c.matchPct}% mos</span>
+      </div>
+      <div class="career-desc">${c.desc}</div>
+      <div class="career-tags">${c.tags.map(t=>`<span class="career-tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+  document.getElementById('careers-container').innerHTML = careersHTML;
+
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.trait-fill, .career-match-fill').forEach(el => {
+      el.style.width = el.dataset.val + '%';
+    });
+  }, 200);
+}
+
+function retakeQuiz() {
+  currentQ = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('intro-screen').classList.remove('hidden');
+  document.getElementById('pbar').style.width = '0%';
+  document.getElementById('prog-pct').textContent = '0 / 50';
+  document.getElementById('prog-label').textContent = 'Boshlashga tayyor';
+  document.getElementById('nav-status').textContent = 'Karyera Testi';
+}
+
+function shareResult() {
+  if (navigator.share) {
+    navigator.share({ title:'Vektor.Uz — Karyera Testi', text:'Men karyera testini yakunladim! Natijamni ko\'ring.', url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.querySelector('.btn-share');
+      btn.textContent = '✓ Havola nusxalandi!';
+      setTimeout(() => { btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="3" cy="8" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 7.2l6-3.4M4.5 8.8l6 3.4" stroke="currentColor" stroke-width="1.3"/></svg> Natijani Ulashish`; }, 2000);
+    });
+  }
+}
+</script>
+</body>
+</html>

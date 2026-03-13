@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vektor.Uz — Qanday Ishlaydi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        lime: { 400:'#bfff00', 500:'#aaff00', 600:'#88cc00' },
+        dark: { 900:'#0a0a0a', 800:'#111', 700:'#161616', 600:'#1e1e1e' }
+      },
+      fontFamily: {
+        syne: ['Syne','sans-serif'],
+        dm:   ['DM Sans','sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lime:#bfff00;
+    --lime-dim:rgba(191,255,0,0.12);
+    --lime-border:rgba(191,255,0,0.25);
+    --bg:#0a0a0a; --s1:#111; --s2:#161616;
+    --text:#f0f0f0; --muted:#555; --muted2:#888;
+    --border:rgba(255,255,255,0.06);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity:0.025;pointer-events:none;
+  }
+  body::after{
+    content:'';position:fixed;inset:0;z-index:0;
+    background-image:
+      linear-gradient(rgba(191,255,0,0.02) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(191,255,0,0.02) 1px,transparent 1px);
+    background-size:52px 52px;pointer-events:none;
+  }
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 56px;
+    background:linear-gradient(180deg,rgba(10,10,10,0.97) 0%,transparent 100%);
+    backdrop-filter:blur(6px);
+  }
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;}
+  .logo span{color:var(--lime);}
+  .nav-cta{
+    font-size:12px;font-weight:600;color:var(--bg);background:var(--lime);
+    border:none;padding:9px 20px;cursor:pointer;
+    clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);
+    transition:background .2s,transform .15s;
+  }
+  .nav-cta:hover{background:#ccff33;transform:translateY(-1px);}
+
+  /* STEP CARD */
+  .step-card{
+    background:var(--s1);
+    border:1px solid var(--border);
+    padding:36px 32px;
+    position:relative;overflow:hidden;
+    transition:border-color .3s, box-shadow .3s, transform .3s;
+    flex:1;
+  }
+  .step-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(191,255,0,0),transparent);
+    transition:background .4s;
+  }
+  .step-card:hover{
+    border-color:var(--lime-border);
+    box-shadow:0 0 0 1px rgba(191,255,0,.18), 0 12px 48px rgba(191,255,0,.1);
+    transform:translateY(-4px);
+  }
+  .step-card:hover::before{
+    background:linear-gradient(90deg,transparent,rgba(191,255,0,.6),transparent);
+  }
+
+  /* Corner bracket decoration */
+  .step-card::after{
+    content:'';position:absolute;bottom:0;right:0;
+    width:18px;height:18px;
+    border-right:1px solid rgba(191,255,0,0);
+    border-bottom:1px solid rgba(191,255,0,0);
+    transition:border-color .3s;
+  }
+  .step-card:hover::after{
+    border-right-color:rgba(191,255,0,.4);
+    border-bottom-color:rgba(191,255,0,.4);
+  }
+
+  /* Numbered badge */
+  .step-num{
+    font-family:'Syne',sans-serif;font-weight:800;
+    font-size:11px;letter-spacing:3px;
+    color:var(--lime);
+    border:1px solid rgba(191,255,0,.3);
+    background:rgba(191,255,0,.07);
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:6px 12px;
+    margin-bottom:28px;
+    position:relative;z-index:1;
+    transition:background .3s, box-shadow .3s;
+  }
+  .step-card:hover .step-num{
+    background:rgba(191,255,0,.14);
+    box-shadow:0 0 16px rgba(191,255,0,.2);
+  }
+
+  /* Icon container */
+  .step-icon{
+    width:52px;height:52px;margin-bottom:22px;
+    border:1px solid rgba(191,255,0,.18);
+    background:rgba(191,255,0,.06);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;
+    transition:background .3s,border-color .3s;
+  }
+  .step-card:hover .step-icon{
+    background:rgba(191,255,0,.12);
+    border-color:rgba(191,255,0,.4);
+  }
+
+  /* Connecting line (desktop) */
+  .connector{
+    display:flex;align-items:center;justify-content:center;
+    padding-top:60px; /* align with icon row */
+    flex-shrink:0;width:80px;
+    position:relative;
+  }
+  .connector-line{
+    width:100%;height:1px;
+    background:linear-gradient(90deg,
+      rgba(191,255,0,.0) 0%,
+      rgba(191,255,0,.35) 40%,
+      rgba(191,255,0,.35) 60%,
+      rgba(191,255,0,.0) 100%
+    );
+    position:relative;
+  }
+  .connector-dot{
+    position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:7px;height:7px;border-radius:50%;
+    background:var(--lime);
+    box-shadow:0 0 10px var(--lime), 0 0 20px rgba(191,255,0,.4);
+    animation:pulse-dot 2.4s ease-in-out infinite;
+  }
+  .connector-arrow{
+    position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  }
+
+  /* Underline accent on heading */
+  .heading-line{
+    display:inline-block;position:relative;
+  }
+  .heading-line::after{
+    content:'';
+    position:absolute;left:0;bottom:-6px;right:0;
+    height:3px;
+    background:linear-gradient(90deg,var(--lime),rgba(191,255,0,0.3),transparent);
+    border-radius:2px;
+    box-shadow:0 0 12px rgba(191,255,0,.5);
+  }
+
+  /* Progress indicator dots below steps */
+  .progress-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.1);
+    transition:all .3s;
+  }
+  .progress-dot.active{
+    background:var(--lime);
+    border-color:var(--lime);
+    box-shadow:0 0 8px var(--lime);
+  }
+
+  /* Mini stat badges */
+  .mini-stat{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 12px;
+    background:rgba(191,255,0,.06);
+    border:1px solid rgba(191,255,0,.15);
+    font-size:11px;font-weight:600;
+    letter-spacing:.5px;color:var(--lime);
+    margin-top:20px;
+  }
+
+  /* CTA section */
+  .cta-btn{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--lime);color:#0a0a0a;
+    font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+    padding:16px 36px;border:none;cursor:pointer;
+    clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+    transition:all .2s;letter-spacing:.3px;
+  }
+  .cta-btn:hover{background:#ccff33;transform:translateY(-2px);box-shadow:0 0 28px rgba(191,255,0,.3);}
+  .cta-btn:hover svg{transform:translateX(4px);}
+  .cta-btn svg{transition:transform .2s;}
+
+  /* Animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+  @keyframes pulse-dot{
+    0%,100%{box-shadow:0 0 8px var(--lime),0 0 16px rgba(191,255,0,.3);}
+    50%{box-shadow:0 0 14px var(--lime),0 0 28px rgba(191,255,0,.5);}
+  }
+  @keyframes scan{
+    0%{opacity:0;transform:translateX(-100%);}
+    30%,70%{opacity:1;}
+    100%{opacity:0;transform:translateX(100%);}
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+  }
+
+  .anim-up{animation:fadeUp .55s ease both;}
+
+  /* Scan line on card hover */
+  .scan-line{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    overflow:hidden;pointer-events:none;
+  }
+  .scan-line::after{
+    content:'';position:absolute;top:0;left:0;right:0;
+    height:1px;background:linear-gradient(90deg,transparent,rgba(191,255,0,.4),transparent);
+    opacity:0;transition:none;
+  }
+  .step-card:hover .scan-line::after{
+    animation:scan 1.6s ease 0.1s forwards;
+  }
+
+  @media(max-width:768px){
+    nav{padding:16px 20px;}
+    .connector{display:none;}
+    .step-card{padding:28px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Vektor<span>.</span>Uz</div>
+  <button class="nav-cta" onclick="window.location.href='test.html';">Testni boshlash</button>
+</nav>
+
+<!-- ══ MAIN SECTION ══ -->
+<section class="relative z-10 min-h-screen flex flex-col justify-center px-6 md:px-14 py-32 max-w-screen-xl mx-auto">
+
+  <!-- SECTION HEADER -->
+  <div class="text-center mb-20 anim-up">
+
+    <!-- eyebrow -->
+    <div class="inline-flex items-center gap-2 mb-6 px-4 py-2"
+         style="background:rgba(191,255,0,0.06);border:1px solid rgba(191,255,0,0.18);">
+      <span class="w-1.5 h-1.5 rounded-full" style="background:var(--lime);box-shadow:0 0 6px var(--lime);animation:pulse-dot 2s infinite;"></span>
+      <span class="text-xs uppercase tracking-widest font-semibold" style="color:var(--lime);">Jarayon</span>
+    </div>
+
+    <!-- heading -->
+    <h2 class="font-syne font-extrabold mb-5"
+        style="font-size:clamp(34px,5vw,60px);letter-spacing:-1.5px;line-height:1.05;">
+      Qanday <span class="heading-line">ishlaydi</span>?
+    </h2>
+
+    <p class="text-sm leading-relaxed max-w-lg mx-auto" style="color:var(--muted2);">
+      Uch bosqichli tizimimiz sizning shaxsiy ma'lumotlaringizni real mehnat bozori
+      talablari bilan taqqoslab, <strong style="color:var(--text);">aniq va ishonchli</strong> natija beradi.
+    </p>
+  </div>
+
+  <!-- STEPS ROW -->
+  <div class="flex flex-col md:flex-row items-stretch gap-0 mb-16"
+       style="animation:fadeUp .55s 0.1s ease both;">
+
+    <!-- ─── STEP 1 ─── -->
+    <div class="step-card anim-up" style="animation-delay:.15s;">
+      <div class="scan-line"></div>
+
+      <!-- top accent dot -->
+      <div style="position:absolute;top:20px;right:20px;width:5px;height:5px;border-radius:50%;background:rgba(191,255,0,0.3);"></div>
+
+      <div class="step-num">01</div>
+
+      <div class="step-icon">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="4" width="20" height="14" rx="2" stroke="#bfff00" stroke-width="1.4"/>
+          <path d="M8 9h10M8 12h6" stroke="#bfff00" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M10 22h6M13 18v4" stroke="#bfff00" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h3 class="font-syne font-bold mb-3" style="font-size:19px;letter-spacing:-.3px;color:#f0f0f0;">
+        Ma'lumotlarni yig'ish
+      </h3>
+      <p class="text-sm leading-relaxed mb-4" style="color:var(--muted2);">
+        Sizning qiziqishlaringiz, o'qish sharoitingiz va shaxsiy xususiyatlaringiz haqida
+        ma'lumot olamiz.
+      </p>
+
+      <!-- sub-items -->
+      <ul style="display:flex;flex-direction:column;gap:8px;margin-top:auto;">
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          50 savollik chuqur test
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          Qiziqishlar va kuchli tomonlar
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          O'qish va hayot sharoiti
+        </li>
+      </ul>
+
+      <div class="mini-stat">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M3 5l1.5 1.5L7 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        ~8 daqiqa
+      </div>
+    </div>
+
+    <!-- ─── CONNECTOR 1→2 ─── -->
+    <div class="connector">
+      <div class="connector-line">
+        <div class="connector-dot"></div>
+        <svg class="connector-arrow" width="8" height="12" viewBox="0 0 8 12" fill="none">
+          <path d="M1 1l6 5-6 5" stroke="rgba(191,255,0,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ─── STEP 2 ─── -->
+    <div class="step-card anim-up" style="animation-delay:.28s;">
+      <div class="scan-line"></div>
+
+      <div style="position:absolute;top:20px;right:20px;width:5px;height:5px;border-radius:50%;background:rgba(191,255,0,0.3);"></div>
+
+      <div class="step-num">02</div>
+
+      <div class="step-icon">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="13" cy="13" r="9" stroke="#bfff00" stroke-width="1.4" stroke-dasharray="4 2"/>
+          <circle cx="13" cy="13" r="4" stroke="#bfff00" stroke-width="1.4"/>
+          <path d="M13 4v2M13 20v2M4 13h2M20 13h2" stroke="#bfff00" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="13" cy="13" r="1.5" fill="#bfff00"/>
+        </svg>
+      </div>
+
+      <h3 class="font-syne font-bold mb-3" style="font-size:19px;letter-spacing:-.3px;color:#f0f0f0;">
+        Sun'iy intellekt tahlili
+      </h3>
+      <p class="text-sm leading-relaxed mb-4" style="color:var(--muted2);">
+        Bizning algoritm sizning ma'lumotlaringizni zamonaviy mehnat bozori talablari
+        bilan solishtiradi.
+      </p>
+
+      <ul style="display:flex;flex-direction:column;gap:8px;margin-top:auto;">
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          25+ soha bo'yicha taqqoslash
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          Real bozor ma'lumotlari asosida
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          Ko'p o'lchamli moslik hisoblash
+        </li>
+      </ul>
+
+      <div class="mini-stat">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8l2.5-3L7 7l1.5-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Millionlab ma'lumot nuqtasi
+      </div>
+    </div>
+
+    <!-- ─── CONNECTOR 2→3 ─── -->
+    <div class="connector">
+      <div class="connector-line">
+        <div class="connector-dot" style="animation-delay:.8s;"></div>
+        <svg class="connector-arrow" width="8" height="12" viewBox="0 0 8 12" fill="none">
+          <path d="M1 1l6 5-6 5" stroke="rgba(191,255,0,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ─── STEP 3 ─── -->
+    <div class="step-card anim-up" style="animation-delay:.42s;">
+      <div class="scan-line"></div>
+
+      <div style="position:absolute;top:20px;right:20px;width:5px;height:5px;border-radius:50%;background:rgba(191,255,0,0.3);"></div>
+
+      <div class="step-num">03</div>
+
+      <div class="step-icon">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 3l2.5 6.5H22l-5.5 4 2 6.5L13 16l-5.5 4 2-6.5L4 9.5h6.5L13 3z" stroke="#bfff00" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h3 class="font-syne font-bold mb-3" style="font-size:19px;letter-spacing:-.3px;color:#f0f0f0;">
+        Aniq yo'nalish
+      </h3>
+      <p class="text-sm leading-relaxed mb-4" style="color:var(--muted2);">
+        Sizga 95% gacha aniqlikda mos keladigan eng yaxshi 3 ta kasbni taklif qilamiz.
+      </p>
+
+      <ul style="display:flex;flex-direction:column;gap:8px;margin-top:auto;">
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          Top 3 kasb — batafsil tavsif
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          Moslik foizi va kuchli tomonlar
+        </li>
+        <li style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted2);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;box-shadow:0 0 5px var(--lime);"></span>
+          O'qish yo'llari va resurslar
+        </li>
+      </ul>
+
+      <div class="mini-stat">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        95% aniqlik
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── BOTTOM FLOW INDICATOR ─── -->
+  <div class="flex flex-col md:flex-row items-center justify-between gap-8 pt-10"
+       style="border-top:1px solid rgba(255,255,255,0.05);animation:fadeUp .6s .5s ease both;">
+
+    <!-- progress dots -->
+    <div class="flex items-center gap-3">
+      <div class="progress-dot active"></div>
+      <div style="width:32px;height:1px;background:linear-gradient(90deg,rgba(191,255,0,.4),rgba(191,255,0,.1));"></div>
+      <div class="progress-dot active"></div>
+      <div style="width:32px;height:1px;background:linear-gradient(90deg,rgba(191,255,0,.4),rgba(191,255,0,.1));"></div>
+      <div class="progress-dot active"></div>
+      <span class="ml-3 text-xs uppercase tracking-widest" style="color:var(--muted);">Natija tayyor</span>
+    </div>
+
+    <!-- stats row -->
+    <div class="flex items-center gap-6 flex-wrap justify-center md:justify-end">
+      <div style="text-align:center;">
+        <div class="font-syne font-bold text-xl" style="color:var(--lime);">12K+</div>
+        <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--muted);">Foydalanuvchi</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div class="font-syne font-bold text-xl" style="color:var(--lime);">95%</div>
+        <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--muted);">Aniqlik</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div class="font-syne font-bold text-xl" style="color:var(--lime);">~8 min</div>
+        <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--muted);">Test vaqti</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button class="cta-btn" onclick="window.location.href='test.html';">
+      Hozir boshlash
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ─── OPTIONAL: TESTIMONIAL STRIP ─── -->
+  <div class="mt-16" style="animation:fadeUp .6s .65s ease both;">
+    <div style="
+      background:var(--s1);border:1px solid var(--border);
+      padding:20px 28px;
+      display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+      position:relative;overflow:hidden;
+    ">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;
+        background:linear-gradient(90deg,transparent,rgba(191,255,0,0.25),transparent);"></div>
+
+      <div style="display:flex;align-items:center;gap:-4px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#222;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;margin-right:-8px;">👨‍💻</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#1a1a1a;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;margin-right:-8px;">👩‍🎨</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#222;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;margin-right:-8px;">👨‍🔬</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#181818;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;color:var(--lime);">+1K</div>
+      </div>
+
+      <div style="width:1px;height:28px;background:var(--border);flex-shrink:0;"></div>
+
+      <div style="flex:1;min-width:200px;">
+        <p style="font-size:13px;color:var(--muted2);line-height:1.6;">
+          <strong style="color:var(--text);">"Vektor.Uz tufayli to'g'ri yo'nalish topdim"</strong> —
+          <span style="color:var(--muted);">Dasturchi bo'lishni hech o'ylamagan edim, lekin natija aniq edi.</span>
+        </p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:3px;">
+        <span style="color:var(--lime);font-size:13px;">★★★★★</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:.5px;">4.9 / 5</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</body>
+</html>

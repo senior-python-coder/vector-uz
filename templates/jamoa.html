@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vektor.Uz — Bizning Jamoa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        lime: { 400:'#bfff00', 500:'#aaff00' },
+      },
+      fontFamily: {
+        syne: ['Syne','sans-serif'],
+        dm:   ['DM Sans','sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lime:#bfff00;
+  --bg:#0a0a0a; --s1:#111; --s2:#161616; --s3:#1e1e1e;
+  --text:#f0f0f0; --muted:#555; --muted2:#888;
+  --border:rgba(255,255,255,0.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;min-height:100vh;}
+
+/* noise */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.025;pointer-events:none;
+}
+/* grid */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(191,255,0,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(191,255,0,.018) 1px,transparent 1px);
+  background-size:52px 52px;pointer-events:none;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 56px;
+  background:linear-gradient(180deg,rgba(10,10,10,.97) 0%,transparent 100%);
+  backdrop-filter:blur(6px);
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;}
+.logo span{color:var(--lime);}
+.nav-cta{font-size:12px;font-weight:600;color:#0a0a0a;background:var(--lime);border:none;padding:9px 20px;cursor:pointer;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);transition:background .2s,transform .15s;}
+.nav-cta:hover{background:#ccff33;transform:translateY(-1px);}
+
+/* CARD */
+.member-card{
+  position:relative;overflow:hidden;
+  background:var(--s1);
+  border:1px solid var(--border);
+  padding:32px 28px 26px;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .25s, box-shadow .25s;
+  cursor:default;
+}
+.member-card:hover{
+  transform:scale(1.045) translateY(-3px);
+  border-color:rgba(191,255,0,.3);
+  box-shadow:0 0 0 1px rgba(191,255,0,.15), 0 12px 48px rgba(191,255,0,.1);
+}
+
+/* top glow line on hover */
+.member-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(191,255,0,0),transparent);
+  transition:background .35s;
+}
+.member-card:hover::before{
+  background:linear-gradient(90deg,transparent,rgba(191,255,0,.7),transparent);
+}
+
+/* bottom-right bracket */
+.member-card::after{
+  content:'';position:absolute;bottom:0;right:0;
+  width:16px;height:16px;
+  border-right:1px solid rgba(191,255,0,0);
+  border-bottom:1px solid rgba(191,255,0,0);
+  transition:border-color .3s;
+}
+.member-card:hover::after{
+  border-right-color:rgba(191,255,0,.45);
+  border-bottom-color:rgba(191,255,0,.45);
+}
+
+/* CEO HIGHLIGHT */
+.member-card.ceo{
+  border-color:rgba(191,255,0,.28);
+  background:linear-gradient(135deg,#111 60%,rgba(191,255,0,.04));
+}
+.member-card.ceo::before{
+  background:linear-gradient(90deg,transparent,rgba(191,255,0,.5),transparent);
+}
+.ceo-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#0a0a0a;background:var(--lime);
+  padding:3px 9px;margin-bottom:20px;
+  clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);
+}
+
+/* AVATAR */
+.avatar-wrap{
+  width:52px;height:52px;margin-bottom:18px;
+  border-radius:50%;
+  border:1.5px solid rgba(191,255,0,.22);
+  background:var(--s3);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:border-color .25s;
+}
+.member-card:hover .avatar-wrap{border-color:rgba(191,255,0,.5);}
+.avatar-wrap.ceo-av{
+  border-color:rgba(191,255,0,.5);
+  box-shadow:0 0 0 3px rgba(191,255,0,.07), 0 0 18px rgba(191,255,0,.12);
+}
+/* spinning ring on CEO */
+.avatar-wrap.ceo-av::after{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  border:1px dashed rgba(191,255,0,.25);
+  animation:spin-slow 12s linear infinite;
+}
+
+/* ROLE TAG */
+.role-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--lime);
+  background:rgba(191,255,0,.07);
+  border:1px solid rgba(191,255,0,.18);
+  padding:3px 10px;margin-bottom:10px;
+}
+
+/* DIVIDER */
+.card-divider{height:1px;background:var(--border);margin:14px 0;}
+
+/* SOCIAL ICONS */
+.social-link{
+  width:30px;height:30px;border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.02);
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;
+  transition:border-color .2s, background .2s, transform .15s;
+}
+.social-link svg{transition:stroke .2s;}
+.social-link:hover{
+  border-color:rgba(191,255,0,.4);
+  background:rgba(191,255,0,.08);
+  transform:translateY(-2px);
+}
+.social-link:hover svg{stroke:#bfff00;}
+
+/* RADAR BG decoration */
+.radar-bg{
+  position:absolute;pointer-events:none;z-index:0;
+  opacity:.06;
+}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+@keyframes spin-slow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 6px var(--lime);}50%{box-shadow:0 0 14px var(--lime), 0 0 28px rgba(191,255,0,.4);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:#111;}::-webkit-scrollbar-thumb{background:#2a2a2a;}
+
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  .member-card{padding:24px 20px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Vektor<span>.</span>Uz</div>
+  <button class="nav-cta" onclick="window.location.href='test.html';">Testni boshlash</button>
+</nav>
+
+<!-- ══ SECTION ══ -->
+<section class="relative z-10 px-6 md:px-14 pt-32 pb-28 max-w-screen-xl mx-auto">
+
+  <!-- RADAR BG -->
+  <svg class="radar-bg" style="right:-120px;top:-60px;width:480px;height:480px;" viewBox="0 0 480 480" fill="none">
+    <circle cx="240" cy="240" r="230" stroke="#bfff00" stroke-width="0.6"/>
+    <circle cx="240" cy="240" r="165" stroke="#bfff00" stroke-width="0.5"/>
+    <circle cx="240" cy="240" r="100" stroke="#bfff00" stroke-width="0.5"/>
+    <circle cx="240" cy="240" r="40"  stroke="#bfff00" stroke-width="0.6"/>
+    <line x1="240" y1="10" x2="240" y2="470" stroke="#bfff00" stroke-width="0.4"/>
+    <line x1="10"  y1="240" x2="470" y2="240" stroke="#bfff00" stroke-width="0.4"/>
+    <line x1="240" y1="240" x2="380" y2="100" stroke="#bfff00" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="240" cy="240" r="5" fill="#bfff00" opacity="0.4"/>
+  </svg>
+
+  <!-- SECTION HEADER -->
+  <div class="mb-16 reveal">
+    <div class="inline-flex items-center gap-2 mb-5 px-4 py-2"
+         style="background:rgba(191,255,0,.06);border:1px solid rgba(191,255,0,.18);">
+      <span class="w-1.5 h-1.5 rounded-full" style="background:var(--lime);box-shadow:0 0 6px var(--lime);animation:pulse-dot 2s infinite;"></span>
+      <span class="text-xs uppercase tracking-widest font-semibold" style="color:var(--lime);">Bizning Jamoa</span>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <h1 class="font-syne font-extrabold leading-none mb-3"
+            style="font-size:clamp(34px,5vw,60px);letter-spacing:-1.5px;">
+          Loyiha <span style="color:var(--lime);">ortida</span>
+        </h1>
+        <p class="text-sm leading-relaxed max-w-md" style="color:var(--muted2);">
+          Har bir sahifa, har bir algoritm va har bir tavsiya — mana shu odamlarning mehnati.
+        </p>
+      </div>
+
+      <!-- Member count badge -->
+      <div style="display:inline-flex;align-items:center;gap:12px;padding:12px 20px;background:var(--s1);border:1px solid var(--border);">
+        <div>
+          <div class="font-syne font-extrabold" style="font-size:28px;line-height:1;color:var(--lime);">6</div>
+          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:2px;">A'zo</div>
+        </div>
+        <div style="width:1px;height:32px;background:var(--border);"></div>
+        <div style="font-size:11px;color:var(--muted2);line-height:1.5;max-width:110px;">
+          Kichik jamoa,<br><span style="color:var(--text);">katta ta'sir.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GRID ══ -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+
+    <!-- ── CEO (spans 1 col but highlighted) ── -->
+    <div class="member-card ceo reveal" style="animation-delay:.05s;">
+
+      <div class="ceo-badge">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+          <path d="M4 .5l.9 2.5H8L5.5 4.7l.9 2.8L4 5.9 1.6 7.5l.9-2.8L0 3h2.1L4 .5z" fill="currentColor"/>
+        </svg>
+        Founder
+      </div>
+
+      <div class="avatar-wrap ceo-av">
+        <!-- Crown/leadership icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 18h18M5 18l2-8 5 4 5-6 2 10" stroke="#bfff00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="5" cy="10" r="1.5" fill="#bfff00"/>
+          <circle cx="12" cy="14" r="1.5" fill="#bfff00"/>
+          <circle cx="19" cy="8"  r="1.5" fill="#bfff00"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">
+        <span class="w-1 h-1 rounded-full" style="background:var(--lime);box-shadow:0 0 4px var(--lime);"></span>
+        CEO & Founder
+      </div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">
+        Mahmudjon Shukurullayev
+      </div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:0;">
+        Loyihaning g'oyasi va strategik yo'nalishi uchun mas'ul.
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:8px;">
+          <a href="#" class="social-link" title="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="20" rx="3"/>
+              <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+              <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" title="GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77 5.44 5.44 0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+        <!-- neon dot indicator -->
+        <div style="display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime);animation:pulse-dot 2s infinite;"></span>
+          Faol
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Back-end Dev ── -->
+    <div class="member-card reveal" style="animation-delay:.1s;">
+      <div style="height:20px;margin-bottom:20px;"></div><!-- spacer aligns with CEO badge -->
+
+      <div class="avatar-wrap">
+        <!-- Terminal / backend icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bfff00" stroke-width="1.4">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M8 9l-3 3 3 3M16 9l3 3-3 3M13 8l-2 8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">Back-end Developer</div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">Dev :)</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">
+        Python asosida server tomoni va API arxitekturasi.
+      </div>
+
+      <div class="card-divider"></div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="3"/>
+            <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+            <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77 5.44 5.44 0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Database Engineer ── -->
+    <div class="member-card reveal" style="animation-delay:.15s;">
+      <div style="height:20px;margin-bottom:20px;"></div>
+
+      <div class="avatar-wrap">
+        <!-- Database icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bfff00" stroke-width="1.4">
+          <ellipse cx="12" cy="6" rx="8" ry="3"/>
+          <path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke-linecap="round"/>
+          <path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">Database Engineer</div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">Ali Khidirov</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">
+        Ma'lumotlar bazasi arxitekturasi va optimizatsiya.
+      </div>
+
+      <div class="card-divider"></div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="3"/>
+            <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+            <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77 5.44 5.44 0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Support Specialist ── -->
+    <div class="member-card reveal" style="animation-delay:.2s;">
+      <div style="height:20px;margin-bottom:20px;"></div>
+
+      <div class="avatar-wrap">
+        <!-- Headset / support icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bfff00" stroke-width="1.4">
+          <path d="M3 18v-6a9 9 0 0118 0v6" stroke-linecap="round"/>
+          <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">Support Specialist</div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">Asliddinov</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">
+        Foydalanuvchi murojaatlarini qabul qilish va yechish.
+      </div>
+
+      <div class="card-divider"></div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="3"/>
+            <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+            <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77 5.44 5.44 0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Project Manager ── -->
+    <div class="member-card reveal" style="animation-delay:.25s;">
+      <div style="height:20px;margin-bottom:20px;"></div>
+
+      <div class="avatar-wrap">
+        <!-- Kanban / PM icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bfff00" stroke-width="1.4">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M9 3v18M15 3v11" stroke-linecap="round"/>
+          <path d="M3 9h6M3 15h6" stroke-linecap="round" stroke-opacity=".5"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">Project Manager</div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">Og'abek</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">
+        Jarayonlar, muddatlar va jamoa koordinatsiyasi.
+      </div>
+
+      <div class="card-divider"></div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="3"/>
+            <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+            <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#" class="social-link" title="GitHub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77 5.44 5.44 0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── UI/UX Designer ── -->
+    <div class="member-card reveal" style="animation-delay:.3s;">
+      <div style="height:20px;margin-bottom:20px;"></div>
+
+      <div class="avatar-wrap">
+        <!-- Figma-like design icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bfff00" stroke-width="1.4">
+          <circle cx="16" cy="12" r="3.5"/>
+          <rect x="4" y="4"  width="8" height="8" rx="1.5"/>
+          <rect x="4" y="14" width="8" height="6"  rx="3"/>
+          <path d="M8 4v8" stroke-opacity=".0"/>
+          <rect x="4" y="14" width="8" height="6" rx="3" stroke-linecap="round"/>
+          <path d="M4 8h8" stroke-opacity=".35" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="role-tag">UI/UX Designer</div>
+
+      <div class="font-syne font-bold text-white" style="font-size:17px;letter-spacing:-.3px;margin-bottom:6px;">Nou</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;">
+        Interfeys dizayni va foydalanuvchi tajribasi.
+      </div>
+
+      <div class="card-divider"></div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link" title="LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="3"/>
+            <path d="M7 10v7M7 7v.01" stroke-linecap="round"/>
+            <path d="M11 17v-3.5a2.5 2.5 0 015 0V17M11 10v7" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#" class="social-link" title="Dribbble">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72M10.44 21.25C8.62 16.5 6.5 12.1 2.5 8.56M21.5 8.56c-3.3.75-6.7 1.1-10 1" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- ── BOTTOM CTA STRIP ── -->
+  <div class="mt-14 reveal" style="animation-delay:.35s;">
+    <div style="
+      background:var(--s1);border:1px solid var(--border);
+      padding:22px 28px;
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+      position:relative;overflow:hidden;
+    ">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(191,255,0,.3),transparent);"></div>
+
+      <div style="display:flex;align-items:center;gap:14px;">
+        <!-- animated radar dot -->
+        <div style="position:relative;width:36px;height:36px;flex-shrink:0;">
+          <div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(191,255,0,.2);animation:spin-slow 8s linear infinite;"></div>
+          <div style="position:absolute;inset:6px;border-radius:50%;background:rgba(191,255,0,.08);border:1px solid rgba(191,255,0,.3);display:flex;align-items:center;justify-content:center;">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:pulse-dot 2s infinite;"></div>
+          </div>
+        </div>
+        <div>
+          <div class="font-syne font-bold" style="font-size:14px;color:var(--text);">Jamoaga qo'shilmoqchimisiz?</div>
+          <div style="font-size:12px;color:var(--muted2);margin-top:2px;">Biz har doim iqtidorli odamlarni qidiramiz.</div>
+        </div>
+      </div>
+
+      <button style="
+        display:inline-flex;align-items:center;gap:9px;
+        background:var(--lime);color:#0a0a0a;
+        font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+        padding:12px 26px;border:none;cursor:pointer;
+        clip-path:polygon(9px 0%,100% 0%,calc(100% - 9px) 100%,0% 100%);
+        transition:all .2s;white-space:nowrap;
+      "
+      onmouseover="this.style.background='#ccff33';this.style.transform='translateY(-2px)'"
+      onmouseout="this.style.background='var(--lime)';this.style.transform='none'"
+      onclick="window.location.href='https://t.me/vektoruz_rasmiy';">
+        Murojaat qilish
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</section>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      const delay = parseFloat(e.target.style.animationDelay || 0) * 1000;
+      setTimeout(() => e.target.classList.add('visible'), delay);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Immediately reveal visible elements
+document.querySelectorAll('.reveal').forEach(el => {
+  if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+    const d = parseFloat(el.style.animationDelay||0)*1000;
+    setTimeout(()=>el.classList.add('visible'), d);
+  }
+});
+</script>
+</body>
+</html>

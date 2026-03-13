@@ -1,0 +1,17 @@
+# Django asosiy freymvorki
+Django>=4.2.0
+
+
+werkzeug>=2.3.0
+
+
+django-axes>=6.0.0
+
+
+pysqlite3-binary; sys_platform == 'linux'
+
+django-axes
+
+django-allauth
+
+requests
