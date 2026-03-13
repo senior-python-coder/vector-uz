@@ -18,3 +18,4 @@ requests
 gunicorn
 whitenoise
 PyJWT
+cryptography
