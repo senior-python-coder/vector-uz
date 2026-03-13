@@ -15,3 +15,5 @@ django-axes
 django-allauth
 
 requests
+gunicorn
+whitenoise
