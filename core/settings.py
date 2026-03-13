@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vector-key-777'
 DEBUG = True
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,6 +65,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 AXES_FAILURE_LIMIT = 5
