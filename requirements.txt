@@ -17,3 +17,4 @@ django-allauth
 requests
 gunicorn
 whitenoise
+PyJWT
