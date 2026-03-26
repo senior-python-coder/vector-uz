@@ -4,7 +4,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vector-key-777'
 DEBUG = True
-ALLOWED_HOSTS = ["vector-uz.onrender.com"]
+ALLOWED_HOSTS = ["vector-uz.onrender.com",
+                "vectorr.uz"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
